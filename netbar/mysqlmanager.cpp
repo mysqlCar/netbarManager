@@ -52,7 +52,7 @@ void mysqlManager::dealCom(infocpu cinfo)
     string  number,model;
     number = cinfo.number.toStdString();
     model = cinfo.model.toStdString();
-    //myManager::
+    dataBase.newComputer(number, model);
     ui->tableStatus->setRowCount(ui->tableStatus->rowCount() + 1);
     ui-> tableStatus ->setItem(comCount, 0, new QTableWidgetItem(cinfo.number));
     ui-> tableStatus ->setItem(comCount++, 1, new QTableWidgetItem(cinfo.model));
@@ -185,8 +185,8 @@ void mysqlManager::refreshStatus()
     ui->tableStatus->setRowCount(comNumber);
     for (vector<computer>::iterator iter = comList.begin(); iter != comList.end(); iter++)
     {
-        ui->tableStatus->setItem(i, 0, QString::fromStdString(iter -> computerID));
-        ui->tableStatus->setItem(i, 1, QString::fromStdString(iter -> computerType));
+        ui->tableStatus->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(iter -> computerID)));
+        ui->tableStatus->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(iter -> computerType)));
         switch (iter -> computerStatus)
         {
         case (-1):
@@ -196,9 +196,13 @@ void mysqlManager::refreshStatus()
         }
         case(0):
         {
-            ui->tableStatus->setItem(i, 2, QString(tr("关机")));
-            continue;
-
+            ui->tableStatus->setItem(i, 2, new QTableWidgetItem(QString(tr("关机"))));
+            i++;
+        }
+        case(1):
+        {
+            ui->tableStatus->setItem(i, 2, new QTableWidgetItem(QString(tr("使用中"))));
+            i++;
         }
         }
 
