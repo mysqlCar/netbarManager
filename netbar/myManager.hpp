@@ -93,11 +93,11 @@ myManager::~myManager(){
 
 bool myManager::getConnectedStatus(){
     if (isConnected){
-        qDebug() << "Is Connected to server!" << endl;
+        cout << "Is Connected to server!" << endl;
         return 1;
     }
     else{
-		qDebug() << "Isnt Connected to server!" << endl;
+        cout << "Isnt Connected to server!" << endl;
 		return 0;
     }
 }
@@ -105,13 +105,13 @@ bool myManager::getConnectedStatus(){
 int myManager::initConnection(){
 	if (getConnectedStatus())
 		return 0;
-	qDebug() << hosts.c_str() << endl;
-	qDebug() << userName.c_str() << endl;
-	qDebug() << passwd.c_str() << endl;
-	qDebug() << dbName.c_str() << endl;
-	qDebug() << port << endl;
+    cout << hosts.c_str() << endl;
+    cout << userName.c_str() << endl;
+    cout << passwd.c_str() << endl;
+    cout << dbName.c_str() << endl;
+    cout << port << endl;
     if (mysql_real_connect(&mysqlClient, hosts.c_str(), userName.c_str(), passwd.c_str(), dbName.c_str(), port, NULL, 0)){
-		qDebug() <<"Error connected to database: \n" << mysql_error(&mysqlClient) << endl;
+        cout <<"Error connected to database: \n" << mysql_error(&mysqlClient) << endl;
 		return 1;
     }
 
@@ -134,31 +134,31 @@ int myManager::Initialization(){
     mysqlQuery = "drop database if exists internetcafe";
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to drop old database!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to drop old database!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
-	else qDebug() << "Succeed to drop old database!" << endl;
+    else cout << "Succeed to drop old database!" << endl;
 
     mysqlQuery = "create database internetcafe";
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to create new database!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to create new database!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
-	else qDebug() << "Succeed to create new database!" << endl;
+    else cout << "Succeed to create new database!" << endl;
 
 	flag = mysql_select_db(&mysqlClient, "internetcafe");
 	if (flag){
-		qDebug() << "Failed to select database!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to select database!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
-	else qDebug() << "Succeed to select database!" << endl;
+    else cout << "Succeed to select database!" << endl;
 
 	mysqlQuery = "create table Computer\
 				(\
@@ -169,12 +169,12 @@ int myManager::Initialization(){
 				)";
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to create table Computer!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to create table Computer!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
-	else qDebug() << "Succeed to create table Computer!" << endl;
+    else cout << "Succeed to create table Computer!" << endl;
 
 	mysqlQuery = "create table User\
 				(\
@@ -184,12 +184,12 @@ int myManager::Initialization(){
 				)";
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to create table User!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to create table User!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
-	else qDebug() << "Succeed to create table User!" << endl;
+    else cout << "Succeed to create table User!" << endl;
 
 	mysqlQuery = "create table VIP\
 				(\
@@ -202,12 +202,12 @@ int myManager::Initialization(){
 				)";
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to create table VIP!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to create table VIP!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
-	else qDebug() << "Succeed to create table VIP!" << endl;
+    else cout << "Succeed to create table VIP!" << endl;
 
 	mysqlQuery = "create table UsingRecord\
 				(\
@@ -224,12 +224,12 @@ int myManager::Initialization(){
 				)";
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to create table UsingRecord!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to create table UsingRecord!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
-	else qDebug() << "Succeed to create table UsingRecord!" << endl;
+    else cout << "Succeed to create table UsingRecord!" << endl;
 
 	mysqlQuery = "create table Repairment\
 				(\
@@ -243,12 +243,12 @@ int myManager::Initialization(){
 				)";
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to create table Repairment!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to create table Repairment!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
-	else qDebug() << "Succeed to create table Repairment!" << endl;
+    else cout << "Succeed to create table Repairment!" << endl;
 
 	return 0;
 }
@@ -264,14 +264,14 @@ int myManager::getComputerStatus(string computerID){
 					where computerID = '" + computerID + "'";
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to get computer " + computerID + "'s status" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to get computer " + computerID + "'s status" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return -1;
 	}
 
 	if ((result = mysql_store_result(&mysqlClient)) == NULL){
-		qDebug() << "Failed to save result\n";
+        cout << "Failed to save result\n";
 		return -1;
 	}
 
@@ -336,7 +336,21 @@ int myManager::abandonComputer(string computerID){
     return 0;
 }
 
+int myManager::changeComputerStatus(string computerID, int computerStatus){
+    string mysqlQuery;
+    int flag;
 
+    mysqlQuery = "update Computer set computerStatus = " + ItoS(computerStatus) +
+                    " where computerID = '" + computerID + "'" ;
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to change the computer status + " + computerID << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
 
 int myManager::Allocation(string recordID, string computerID, string vipID, string userID, int startTime, int endTime){
     string mysqlQuery;
@@ -346,13 +360,13 @@ int myManager::Allocation(string recordID, string computerID, string vipID, stri
 					+ recordID + "', '" + computerID + "', '" + vipID + "', '"
 					+ userID + "', " + to_string(startTime) + ", " + to_string(endTime) + ")";
 
-	qDebug() << mysqlQuery << endl;
+    cout << mysqlQuery << endl;
 
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to allocation!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to allocation!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
 	return 0;
@@ -366,9 +380,9 @@ int myManager::newComputer(string computerID, string computerType){
 					('" + computerID + "', '" + computerType + "', 0)";
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to add the computer!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to add the computer!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
 	return 0;
@@ -383,9 +397,9 @@ int myManager::newVIP(string vipID, string userID, int rechargeAmount){
 
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to add the VIP card!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to add the VIP card!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
 	return 0;
@@ -399,9 +413,9 @@ int myManager::newUser(string userID, string userName){
 				+ userID + "', '" + userName + "')";
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to add the User!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to add the User!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
 	return 0;
@@ -415,9 +429,9 @@ int myManager::rechargeVIP(string vipID, int rechargeAmount){
 					" where vipID = '" + vipID + "'";
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to recharge the VIP card + " + vipID << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to recharge the VIP card + " + vipID << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
 	return 0;
@@ -431,9 +445,9 @@ int myManager::newRepairment(string repairmentID, string computerID, int recharg
 					('" + repairmentID + "', '" + computerID + "', '" + repairmentReason + "', " + to_string(repairmentDate) + ", 0)";
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to add the repairment" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to add the repairment" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
 	return 0;
@@ -447,9 +461,9 @@ int myManager::changeRepairmentStatus(string repairmentID, int repairmentStatus)
 					" where repairmentID = '" + repairmentID + "'" ;
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to change the repairment status + " + repairmentID << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to change the repairment status + " + repairmentID << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
 	return 0;
@@ -462,9 +476,9 @@ int myManager::abandonVIP(string vipID){
 	mysqlQuery = "delete from VIP where vipID = '" + vipID + "'";
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to abandon the VIP card!" << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to abandon the VIP card!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return 1;
 	}
 	return 0;
@@ -490,14 +504,14 @@ int myManager::selectUsingRecord(string *recordID, string *computerID, string *v
 
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to get usingRecord " << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to get usingRecord " << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return -1;
 	}
 
 	if ((result = mysql_store_result(&mysqlClient)) == NULL){
-		qDebug() << "Failed to save result\n";
+        cout << "Failed to save result\n";
 		return -1;
 	}
 
@@ -537,14 +551,14 @@ int myManager::selectRepairment(string *repairmentID, string *computerID, string
 
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to get repairment " << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to get repairment " << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return -1;
 	}
 
 	if ((result = mysql_store_result(&mysqlClient)) == NULL){
-		qDebug() << "Failed to save result\n";
+        cout << "Failed to save result\n";
 		return -1;
 	}
 
@@ -579,14 +593,14 @@ int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipC
 
 	flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
 	if (flag){
-		qDebug() << "Failed to get VIP " << endl;
-		qDebug() << "Error Messege:" << endl;
-		qDebug() << mysql_error(&mysqlClient) <<endl << endl;
+        cout << "Failed to get VIP " << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
 		return -1;
 	}
 
 	if ((result = mysql_store_result(&mysqlClient)) == NULL){
-		qDebug() << "Failed to save result\n";
+        cout << "Failed to save result\n";
 		return -1;
 	}
 
