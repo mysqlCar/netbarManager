@@ -26,17 +26,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         login.cpp \
     mysqlmanager.cpp \
-    global.cpp \
     newcard.cpp \
     newusr.cpp \
     cpuinfo.cpp \
     recharge.cpp \
     repair.cpp \
-    assign.cpp
+    assign.cpp \
+    myManager.cpp
 
 HEADERS  += login.h \
     mysqlmanager.h \
-    global.h \
     newcard.h \
     newusr.h \
     cpuinfo.h \
