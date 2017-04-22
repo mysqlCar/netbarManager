@@ -2,6 +2,7 @@
 #include "ui_mysqlmanager.h"
 #include <bits/stdc++.h>
 #include <QDebug>
+#include <QMessageBox>
 
 
 mysqlManager::mysqlManager(QWidget *parent) :
@@ -52,7 +53,13 @@ void mysqlManager::dealCom(infocpu cinfo)
     string  number,model;
     number = cinfo.number.toStdString();
     model = cinfo.model.toStdString();
-    dataBase.newComputer(number, model);
+    int flag = dataBase.newComputer(number, model);
+    if (flag)
+    {
+        warninginfo("添加用户失败，请确保当前添加电脑编号唯一");
+        return;
+    }
+    successinfo("添加成功");
     ui->tableStatus->setRowCount(ui->tableStatus->rowCount() + 1);
     ui-> tableStatus ->setItem(comCount, 0, new QTableWidgetItem(cinfo.number));
     ui-> tableStatus ->setItem(comCount++, 1, new QTableWidgetItem(cinfo.model));
@@ -69,6 +76,14 @@ void mysqlManager::addUsr()
 void mysqlManager::dealUsr(infousr uinfo)
 {
     qDebug() << uinfo.name << uinfo.id << "\n";
+    string name, id;
+    name = uinfo.name.toStdString();
+    id = uinfo.id.toStdString();
+    int flag = dataBase.newUser(id, name);
+    if (flag)
+        warninginfo("添加用户失败，请确保当前添加用户为新用户且身份证合法");
+    else
+        successinfo("添加成功");
 }
 
 void mysqlManager::addCard()
@@ -81,7 +96,21 @@ void mysqlManager::addCard()
 
 void mysqlManager::dealCard(infocard cardinfo)
 {
+    if (! cardinfo.ok || cardinfo.name == NULL)
+    {
+        warninginfo("创建新卡失败，请在确认前使用两个检查按钮确认输入信息是否合法");
+        return;
+    }
     qDebug() << cardinfo.id << cardinfo.name << cardinfo.charge << "\n";
+    int flag = dataBase.newVIP(cardinfo.cardNumber.toStdString(), cardinfo.id.toStdString(), cardinfo.charge.toInt());
+    if (flag)
+    {
+        warninginfo("创建新卡失败，请在确认前使用两个检查按钮确认输入信息是否合法");
+    }
+    else
+    {
+        successinfo("添加成功");
+    }
 }
 
 void mysqlManager::assignCom()
@@ -208,6 +237,16 @@ void mysqlManager::refreshStatus()
 
 
     }
+}
+
+void mysqlManager::successinfo(QString info)
+{
+    QMessageBox::information(this, tr("Success"), tr(info), QMessageBox::Yes, QMessageBox::Yes);
+}
+
+void mysqlManager::warninginfo(QString info)
+{
+    QMessageBox::warning(this, tr("Warning"), tr(info),QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 }
 
 /*

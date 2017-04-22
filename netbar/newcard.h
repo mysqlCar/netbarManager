@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QString>
+#include "global.h"
 
 namespace Ui {
 class newcard;
@@ -10,7 +11,8 @@ class newcard;
 
 struct infocard
 {
-    QString name,id,charge;
+    QString name,id,charge, cardNumber;
+    bool ok;
 };
 
 class newcard : public QDialog
@@ -32,8 +34,10 @@ private:
     Ui::newcard *ui;
     infocard card_info;
 
+
     void upd();
     void getname();
+    void checkNumber();
 };
 
 #endif // NEWCARD_H

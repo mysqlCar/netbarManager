@@ -43,6 +43,8 @@ class myManager{
 	int newComputer(string computerID, string computerType);
 	int newUser(string userID, string userName);
 	int newVIP(string VIPID, string userID, int rechargeAmount);
+    int checkVIPNumber(string);
+    int getUserName(string, string &);
 	int abandonVIP(string vipID);
 	int rechargeVIP(string vipID, int rechargeAmount);
 	int newRepairment(string repairmentID, string computerID, int rechargeAmount, string repairmentReason, int repairmentDate);

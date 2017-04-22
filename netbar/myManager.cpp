@@ -355,6 +355,11 @@ int myManager::newVIP(string vipID, string userID, int rechargeAmount){
     return 0;
 }
 
+int myManager::checkVIPNumber(string vipID)
+{
+    // to be filled, return 0 represent ok
+}
+
 int myManager::newUser(string userID, string userName){
     string mysqlQuery;
     int flag;
@@ -431,6 +436,38 @@ int myManager::abandonVIP(string vipID){
         cout << mysql_error(&mysqlClient) <<endl << endl;
         return 1;
     }
+    return 0;
+}
+
+int myManager::getUserName(string userID, string &userName)
+{
+    string mysqlQuery;
+    MYSQL_RES * result;
+    MYSQL_ROW row;
+    int flag;
+
+    mysqlQuery = "select * from User where userID = ";
+    mysqlQuery = mysqlQuery + userID;
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to get usingRecord " << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return -1;
+    }
+
+    if ((result = mysql_store_result(&mysqlClient)) == NULL){
+        cout << "Failed to save result\n";
+        return -1;
+    }
+
+    row = mysql_fetch_row(result);
+    if (row != NULL)
+    {
+        userName = row[0];
+    }
+    else
+        return -1;
     return 0;
 }
 

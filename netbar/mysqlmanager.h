@@ -9,6 +9,7 @@
 #include "recharge.h"
 #include "repair.h"
 #include "myManager.hpp"
+#include "global.h"
 
 
 namespace Ui {
@@ -37,7 +38,6 @@ private:
     assign *asign;
     recharge *charge;
     repair *mend;
-    myManager dataBase = myManager("123.207.89.22", "root", "miwu~", "internetcafe", 3306);
 
     void addCom();
     void dealCom(infocpu);
@@ -59,6 +59,8 @@ private:
     void statusDown();
     void refreshStatus();
 
+    void successinfo(QString);
+    void warninginfo(QString);
 };
 
 #endif // MYSQLMANAGER_H

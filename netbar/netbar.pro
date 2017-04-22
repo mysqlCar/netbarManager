@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     recharge.cpp \
     repair.cpp \
     assign.cpp \
-    myManager.cpp
+    myManager.cpp \
+    global.cpp
 
 HEADERS  += login.h \
     mysqlmanager.h \
@@ -43,7 +44,8 @@ HEADERS  += login.h \
     repair.h \
     assign.h \
     myManager.hpp \
-    mysqlTransObj.hpp
+    mysqlTransObj.hpp \
+    global.h
 
 FORMS    += login.ui \
     mysqlmanager.ui \
