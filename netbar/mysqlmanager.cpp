@@ -60,10 +60,26 @@ void mysqlManager::dealCom(infocpu cinfo)
         return;
     }
     successinfo("添加成功");
-    ui->tableStatus->setRowCount(ui->tableStatus->rowCount() + 1);
-    ui-> tableStatus ->setItem(comCount, 0, new QTableWidgetItem(cinfo.number));
-    ui-> tableStatus ->setItem(comCount++, 1, new QTableWidgetItem(cinfo.model));
+    ui-> tableStatus ->setRowCount(ui->tableStatus->rowCount() + 1);
+    ui-> tableStatus ->setItem(ui->tableStatus->rowCount() - 1, 0, new QTableWidgetItem(cinfo.number));
+    ui-> tableStatus ->setItem(ui->tableStatus->rowCount() - 1, 1, new QTableWidgetItem(cinfo.model));
+    comCount++;
 }
+
+/*void mysqlManager::calcCom()
+{
+    int flag = dataBase.newComputer();
+    if (flag)
+    {
+        warninginfo("添加用户失败，请确保当前添加电脑编号唯一");
+        return;
+    }
+    successinfo("添加成功");
+    ui-> tableStatus ->setRowCount(ui->tableStatus->rowCount() + 1);
+    ui-> tableStatus ->setItem(ui->tableStatus->rowCount() - 1, 0, new QTableWidgetItem(cinfo.number));
+    ui-> tableStatus ->setItem(ui->tableStatus->rowCount() - 1, 1, new QTableWidgetItem(cinfo.model));
+    comCount++;
+}*/
 
 void mysqlManager::addUsr()
 {
@@ -241,12 +257,12 @@ void mysqlManager::refreshStatus()
 
 void mysqlManager::successinfo(QString info)
 {
-    QMessageBox::information(this, tr("Success"), tr(info), QMessageBox::Yes, QMessageBox::Yes);
+    QMessageBox::information(this, tr("Success"), info, QMessageBox::Yes, QMessageBox::Yes);
 }
 
 void mysqlManager::warninginfo(QString info)
 {
-    QMessageBox::warning(this, tr("Warning"), tr(info),QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+    QMessageBox::warning(this, tr("Warning"), info,QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 }
 
 /*

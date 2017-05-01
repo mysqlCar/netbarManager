@@ -203,32 +203,99 @@ int myManager::Initialization(){
     return 0;
 }
 
-int myManager::getComputerStatus(string computerID){
+int myManager::newComputer(string computerID, string computerType){
     string mysqlQuery;
-    MYSQL_RES * result;
-    MYSQL_ROW row;
     int flag;
 
-    mysqlQuery = "select computerStatus \
-                    from Computer \
-                    where computerID = '" + computerID + "'";
+    mysqlQuery = "insert Into Computer values \
+                    ('" + computerID + "', '" + computerType + "', 0)";
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
-        cout << "Failed to get computer " + computerID + "'s status" << endl;
+        cout << "Failed to add the computer!" << endl;
         cout << "Error Messege:" << endl;
         cout << mysql_error(&mysqlClient) <<endl << endl;
-        return -1;
+        return 1;
     }
+    return 0;
+}
 
-    if ((result = mysql_store_result(&mysqlClient)) == NULL){
-        cout << "Failed to save result\n";
-        return -1;
+int myManager::newVIP(string vipID, string userID, int rechargeAmount){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "insert into VIP values ('"
+                + vipID + "', '" + userID + "', 1, " + to_string(rechargeAmount) + ")";
+
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to add the VIP card!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
     }
+    return 0;
+}
 
-    if ((row = mysql_fetch_row(result)) != NULL)
-        return atoi(row[0]);
+int myManager::newUser(string userID, string userName){
+    string mysqlQuery;
+    int flag;
 
-    return -1;
+    mysqlQuery = "insert Into User values ('"
+                + userID + "', '" + userName + "')";
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to add the User!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
+
+int myManager::newRepairment(string repairmentID, string computerID, string repairmentReason, int repairmentDate, int repairmentStatus){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "insert Into Repairment values \
+                    ('" + repairmentID + "', '" + computerID + "', '" + repairmentReason + "', " + to_string(repairmentDate) + "', " + to_string(repairmentStatus) + ", 0)";
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to add the repairment" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
+
+int myManager::abandonComputer(string computerID){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "delete from Computer where computerID = '" + computerID + "'";
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to abandon the Computer!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
+
+int myManager::abandonVIP(string vipID){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "delete from VIP where vipID = '" + vipID + "'";
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to abandon the VIP card!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
 }
 
 int myManager::selectComputer(string *computerID, string *computerType, int computerStatus, vector<computer> &Res){
@@ -269,206 +336,6 @@ int myManager::selectComputer(string *computerID, string *computerType, int comp
     }
 
     return -1;
-}
-
-int myManager::abandonComputer(string computerID){
-    string mysqlQuery;
-    int flag;
-
-    mysqlQuery = "delete from Computer where computerID = '" + computerID + "'";
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to abandon the Computer!" << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return 1;
-    }
-    return 0;
-}
-
-int myManager::changeComputerStatus(string computerID, int computerStatus){
-    string mysqlQuery;
-    int flag;
-
-    mysqlQuery = "update Computer set computerStatus = " + ItoS(computerStatus) +
-                    " where computerID = '" + computerID + "'" ;
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to change the computer status + " + computerID << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return 1;
-    }
-    return 0;
-}
-
-int myManager::Allocation(string recordID, string computerID, string vipID, string userID, int startTime, int endTime){
-    string mysqlQuery;
-    int flag;
-
-    mysqlQuery = "insert Into UsingRecord values ('"
-                    + recordID + "', '" + computerID + "', '" + vipID + "', '"
-                    + userID + "', " + to_string(startTime) + ", " + to_string(endTime) + ")";
-
-    cout << mysqlQuery << endl;
-
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to allocation!" << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return 1;
-    }
-    return 0;
-}
-
-int myManager::newComputer(string computerID, string computerType){
-    string mysqlQuery;
-    int flag;
-
-    mysqlQuery = "insert Into Computer values \
-                    ('" + computerID + "', '" + computerType + "', 0)";
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to add the computer!" << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return 1;
-    }
-    return 0;
-}
-
-int myManager::newVIP(string vipID, string userID, int rechargeAmount){
-    string mysqlQuery;
-    int flag;
-
-    mysqlQuery = "insert into VIP values ('"
-                + vipID + "', '" + userID + "', 1, " + to_string(rechargeAmount) + ")";
-
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to add the VIP card!" << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return 1;
-    }
-    return 0;
-}
-
-int myManager::checkVIPNumber(string vipID)
-{
-    // to be filled, return 0 represent ok
-}
-
-int myManager::newUser(string userID, string userName){
-    string mysqlQuery;
-    int flag;
-
-    mysqlQuery = "insert Into User values ('"
-                + userID + "', '" + userName + "')";
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to add the User!" << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return 1;
-    }
-    return 0;
-}
-
-int myManager::rechargeVIP(string vipID, int rechargeAmount){
-    string mysqlQuery;
-    int flag;
-
-    mysqlQuery = "update VIP set vipBalance = vipBalance + " + to_string(rechargeAmount) +
-                    " where vipID = '" + vipID + "'";
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to recharge the VIP card + " + vipID << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return 1;
-    }
-    return 0;
-}
-
-int myManager::newRepairment(string repairmentID, string computerID, int rechargeAmount, string repairmentReason, int repairmentDate){
-    string mysqlQuery;
-    int flag;
-
-    mysqlQuery = "insert Into Repairment values \
-                    ('" + repairmentID + "', '" + computerID + "', '" + repairmentReason + "', " + to_string(repairmentDate) + ", 0)";
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to add the repairment" << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return 1;
-    }
-    return 0;
-}
-
-int myManager::changeRepairmentStatus(string repairmentID, int repairmentStatus){
-    string mysqlQuery;
-    int flag;
-
-    mysqlQuery = "update Repairment set repairmentStatus = " + to_string(repairmentStatus) +
-                    " where repairmentID = '" + repairmentID + "'" ;
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to change the repairment status + " + repairmentID << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return 1;
-    }
-    return 0;
-}
-
-int myManager::abandonVIP(string vipID){
-    string mysqlQuery;
-    int flag;
-
-    mysqlQuery = "delete from VIP where vipID = '" + vipID + "'";
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to abandon the VIP card!" << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return 1;
-    }
-    return 0;
-}
-
-int myManager::getUserName(string userID, string &userName)
-{
-    string mysqlQuery;
-    MYSQL_RES * result;
-    MYSQL_ROW row;
-    int flag;
-
-    mysqlQuery = "select * from User where userID = ";
-    mysqlQuery = mysqlQuery + userID;
-    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
-    if (flag){
-        cout << "Failed to get usingRecord " << endl;
-        cout << "Error Messege:" << endl;
-        cout << mysql_error(&mysqlClient) <<endl << endl;
-        return -1;
-    }
-
-    if ((result = mysql_store_result(&mysqlClient)) == NULL){
-        cout << "Failed to save result\n";
-        return -1;
-    }
-
-    row = mysql_fetch_row(result);
-    if (row != NULL)
-    {
-        userName = row[0];
-    }
-    else
-        return -1;
-    return 0;
 }
 
 int myManager::selectUsingRecord(string *recordID, string *computerID, string *vipID, string *userID, vector<usingRecord> &Res){
@@ -602,4 +469,138 @@ int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipC
     }
 
     return -1;
+}
+
+int myManager::checkVIPNumber(string vipID)
+{
+    vector<vipCard> Res;
+    return selectVIP(&vipID, NULL, -1, Res);
+}
+
+int myManager::getComputerStatus(string computerID){
+    string mysqlQuery;
+    MYSQL_RES * result;
+    MYSQL_ROW row;
+    int flag;
+
+    mysqlQuery = "select computerStatus \
+                    from Computer \
+                    where computerID = '" + computerID + "'";
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to get computer " + computerID + "'s status" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return -1;
+    }
+
+    if ((result = mysql_store_result(&mysqlClient)) == NULL){
+        cout << "Failed to save result\n";
+        return -1;
+    }
+
+    if ((row = mysql_fetch_row(result)) != NULL)
+        return atoi(row[0]);
+
+    return -1;
+}
+
+int myManager::changeComputerStatus(string computerID, int computerStatus){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "update Computer set computerStatus = " + ItoS(computerStatus) +
+                    " where computerID = '" + computerID + "'" ;
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to change the computer status + " + computerID << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
+
+int myManager::Allocation(string recordID, string computerID, string vipID, string userID, int startTime, int endTime){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "insert Into UsingRecord values ('"
+                    + recordID + "', '" + computerID + "', '" + vipID + "', '"
+                    + userID + "', " + to_string(startTime) + ", " + to_string(endTime) + ")";
+
+    cout << mysqlQuery << endl;
+
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to allocation!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
+
+int myManager::getUserName(string userID, string &userName)
+{
+    string mysqlQuery;
+    MYSQL_RES * result;
+    MYSQL_ROW row;
+    int flag;
+
+    mysqlQuery = "select * from User where userID = ";
+    mysqlQuery = mysqlQuery + userID;
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to get usingRecord " << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return -1;
+    }
+
+    if ((result = mysql_store_result(&mysqlClient)) == NULL){
+        cout << "Failed to save result\n";
+        return -1;
+    }
+
+    row = mysql_fetch_row(result);
+    if (row != NULL)
+    {
+        userName = row[0];
+    }
+    else
+        return -1;
+    return 0;
+}
+
+int myManager::rechargeVIP(string vipID, int rechargeAmount){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "update VIP set vipBalance = vipBalance + " + to_string(rechargeAmount) +
+                    " where vipID = '" + vipID + "'";
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to recharge the VIP card + " + vipID << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
+
+int myManager::changeRepairmentStatus(string repairmentID, int repairmentStatus){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "update Repairment set repairmentStatus = " + to_string(repairmentStatus) +
+                    " where repairmentID = '" + repairmentID + "'" ;
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to change the repairment status + " + repairmentID << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
 }
