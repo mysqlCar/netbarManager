@@ -269,7 +269,7 @@ void mysqlManager::dealAssign(assignInfo ainfo)
         return;
     }
     static QDateTime begintime;
-    begintime = (QDate(2000, 1, 1) );
+    begintime = QDateTime(QDate(2000, 1, 1) );
     startsec = QDateTime::currentDateTime().secsTo(begintime);
     endsec = ainfo.endTime.secsTo(begintime);
     if (ainfo.useCash)
@@ -282,7 +282,7 @@ void mysqlManager::dealAssign(assignInfo ainfo)
         warninginfo(tr("查询失败"));
     //这里我修了一修
 
-    flag = dataBase.Allocation(to_string(maxid), ainfo.comNumber.toStdString(),
+    flag = dataBase.Allocation(maxid, ainfo.comNumber.toStdString(),
                                ainfo.idNumber.toStdString(), ainfo.cardNumber.toStdString(),
                                startsec, endsec);
     if (flag)
