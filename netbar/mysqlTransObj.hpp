@@ -43,8 +43,8 @@ class usingRecord{
 
 class repairment{
 	public:
-	string repairmentID, computerID, repairmentReason;
-	int repairmentDate, repairmentStatus;
+    string repairmentID, computerID;
+    int repairmentReason, repairmentDate, repairmentStatus;
 	void println(){
         cout << repairmentID << " " << computerID << " " << repairmentReason << " " << repairmentDate << " " << repairmentStatus <<endl;
 	}

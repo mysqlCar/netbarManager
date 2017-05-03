@@ -332,27 +332,23 @@ int myManager::selectComputer(string *computerID, string *computerType, int comp
     return -1;
 }
 
-int myManager::selectUsingRecord(string *recordID, string *computerID, string *vipID, string *userID, vector<usingRecord> &Res){
+int myManager::selectUser(string *userID, string *userName, vector<user> &Res){
     string mysqlQuery;
     MYSQL_RES * result;
     MYSQL_ROW row;
     int flag;
 
     mysqlQuery = "select * \
-                    from UsingRecord \
+                    from User \
                     where 1";
-    if (recordID != NULL)
-        mysqlQuery = mysqlQuery + " and recordID = '" + *recordID + "'";
-    if (computerID != NULL)
-        mysqlQuery = mysqlQuery + " and computerID = '" + *computerID + "'";
-    if (vipID != NULL)
-        mysqlQuery = mysqlQuery + " and vipID = '" + *vipID + "'";
     if (userID != NULL)
         mysqlQuery = mysqlQuery + " and userID = '" + *userID + "'";
+    if (userName != NULL)
+        mysqlQuery = mysqlQuery + " and userName = '" + *userName + "'";
 
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
-        cout << "Failed to get usingRecord " << endl;
+        cout << "Failed to get User " << endl;
         cout << "Error Messege:" << endl;
         cout << mysql_error(&mysqlClient) <<endl << endl;
         return -1;
@@ -363,14 +359,53 @@ int myManager::selectUsingRecord(string *recordID, string *computerID, string *v
         return -1;
     }
 
-    usingRecord X;
+    user X;
+
     while ((row = mysql_fetch_row(result)) != NULL){
-        X.recordID = row[0];
-        X.computerID = row[1];
-        X.vipID = row[2];
-        X.userID = row[3];
-        X.startTime = atoi(row[4]);
-        X.endTime = atoi(row[5]);
+        X.userID = row[0];
+        X.userName = row[1];
+        Res.push_back(X);
+    }
+
+    return -1;
+}
+
+int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipCard> &Res){
+    string mysqlQuery;
+    MYSQL_RES * result;
+    MYSQL_ROW row;
+    int flag;
+
+    mysqlQuery = "select * \
+                    from VIP \
+                    where 1";
+    if (vipID != NULL)
+        mysqlQuery = mysqlQuery + " and vipID = '" + *vipID + "'";
+    if (userID != NULL)
+        mysqlQuery = mysqlQuery + " and userID = '" + *userID + "'";
+    if (vipRank != -1)
+        mysqlQuery = mysqlQuery + " and vipRank = '" + to_string(vipRank) + "'";
+
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to get VIP " << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return -1;
+    }
+
+    if ((result = mysql_store_result(&mysqlClient)) == NULL){
+        cout << "Failed to save result\n";
+        return -1;
+    }
+
+    vipCard X;
+
+    while ((row = mysql_fetch_row(result)) != NULL){
+        X.vipID = row[0];
+        X.userID = row[1];
+        X.vipBalance = atoi(row[2]);
+        X.vipRank = atoi(row[3]);
         Res.push_back(X);
     }
 
@@ -414,7 +449,7 @@ int myManager::selectRepairment(string *repairmentID, string *computerID, int re
     while ((row = mysql_fetch_row(result)) != NULL){
         X.repairmentID = row[0];
         X.computerID = row[1];
-        X.repairmentReason = row[2];
+        X.repairmentReason = atoi(row[2]);
         X.repairmentDate = atoi(row[3]);
         X.repairmentStatus = atoi(row[4]);
         Res.push_back(X);
@@ -423,25 +458,27 @@ int myManager::selectRepairment(string *repairmentID, string *computerID, int re
     return -1;
 }
 
-int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipCard> &Res){
+int myManager::selectUsingRecord(string *recordID, string *computerID, string *vipID, string *userID, vector<usingRecord> &Res){
     string mysqlQuery;
     MYSQL_RES * result;
     MYSQL_ROW row;
     int flag;
 
     mysqlQuery = "select * \
-                    from VIP \
+                    from UsingRecord \
                     where 1";
+    if (recordID != NULL)
+        mysqlQuery = mysqlQuery + " and recordID = '" + *recordID + "'";
+    if (computerID != NULL)
+        mysqlQuery = mysqlQuery + " and computerID = '" + *computerID + "'";
     if (vipID != NULL)
         mysqlQuery = mysqlQuery + " and vipID = '" + *vipID + "'";
     if (userID != NULL)
         mysqlQuery = mysqlQuery + " and userID = '" + *userID + "'";
-    if (vipRank != -1)
-        mysqlQuery = mysqlQuery + " and vipRank = '" + to_string(vipRank) + "'";
 
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
-        cout << "Failed to get VIP " << endl;
+        cout << "Failed to get usingRecord " << endl;
         cout << "Error Messege:" << endl;
         cout << mysql_error(&mysqlClient) <<endl << endl;
         return -1;
@@ -452,13 +489,14 @@ int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipC
         return -1;
     }
 
-    vipCard X;
-
+    usingRecord X;
     while ((row = mysql_fetch_row(result)) != NULL){
-        X.vipID = row[0];
-        X.userID = row[1];
-        X.vipBalance = atoi(row[2]);
-        X.vipRank = atoi(row[3]);
+        X.recordID = row[0];
+        X.computerID = row[1];
+        X.vipID = row[2];
+        X.userID = row[3];
+        X.startTime = atoi(row[4]);
+        X.endTime = atoi(row[5]);
         Res.push_back(X);
     }
 

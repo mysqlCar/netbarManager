@@ -49,7 +49,7 @@ class myManager{
 //  int abandontRepairment(string repairmentID);
 
     int selectComputer(string *computerID, string *computerType, int computerStatus, vector<computer> &Res);
-//  int selectUser(string *userID, string *userName, vector<User> &Res);
+    int selectUser(string *userID, string *userName, vector<user> &Res);
     int selectVIP(string *vipID, string *userID, int vipRank, vector<vipCard> &Res);
     int selectRepairment(string *repairmentID, string *computerID, int repairmentReason, int repairmentDate, int repairmentStatus, vector<repairment> &Res);
     int selectUsingRecord(string *recordID, string *computerID, string *vipID, string *userID, vector<usingRecord> &Res);
