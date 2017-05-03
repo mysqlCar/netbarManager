@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QString>
+#include <QDateTime>
 
 namespace Ui {
 class assign;
@@ -10,7 +11,8 @@ class assign;
 
 struct assignInfo
 {
-    QString comNumber, userName, idNumber, endTime, cardNumber;
+    QString comNumber, userName, idNumber, cardNumber;
+    QDateTime endTime;
     bool useCash;
 };
 

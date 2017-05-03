@@ -10,6 +10,7 @@
 #include "repair.h"
 #include "myManager.hpp"
 #include "global.h"
+#include <QTimerEvent>
 
 
 namespace Ui {
@@ -23,10 +24,10 @@ class mysqlManager : public QMainWindow
 public:
     explicit mysqlManager(QWidget *parent = 0);
     ~mysqlManager();
-/*
+
 protected:
-    bool eventFilter(QObject *obj, QEvent *eve);
-*/
+    void timerEvent(QTimerEvent *event);
+
 
 private:
     Ui::mysqlManager *ui;
@@ -54,9 +55,12 @@ private:
     void repairCom();
     void dealRepair(repairInfo);
     void getRecord();
+    void queryRecord();
 
     void removeComputer();
     void sortStatus(int);
+    void sortRecord(int);
+    void sortRepair(int);
     void statusUp();
     void statusDown();
     void refreshStatus();

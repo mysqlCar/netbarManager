@@ -4,6 +4,9 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QDateTime>
+#include <QTime>
+#include <QDate>
 
 
 mysqlManager::mysqlManager(QWidget *parent) :
@@ -21,25 +24,47 @@ mysqlManager::mysqlManager(QWidget *parent) :
     connect(ui->buttonReset, &QPushButton::clicked, this, &mysqlManager::resetdata);
     connect(ui->usingRecord, &QPushButton::clicked, this, &mysqlManager::getRecord);
     connect(ui->tableStatus->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortStatus);
+    connect(ui->tableRecord->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortRecord);
+    connect(ui->tableRepair->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortRepair);
     connect(ui->removeCom, &QPushButton::clicked, this, &mysqlManager::removeComputer);
     connect(ui->comPushUp, &QPushButton::clicked, this, &mysqlManager::statusUp);
     connect(ui->comPushDown, &QPushButton::clicked, this, &mysqlManager::statusDown);
+    connect(ui->queryRecord, &QPushButton::clicked, this, &mysqlManager::queryRecord);
     ui->tableStatus->viewport()->installEventFilter(this);
     ui->tableStatus->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableStatus->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableStatus->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableStatus->verticalHeader()->setHidden(true);
+    ui->tableRecord->viewport()->installEventFilter(this);
+    ui->tableRecord->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableRecord->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableRecord->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableRecord->verticalHeader()->setHidden(true);
+    ui->tableRepair->viewport()->installEventFilter(this);
+    ui->tableRepair->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableRepair->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableRepair->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableRepair->verticalHeader()->setHidden(true);
     /*ui->tableStatus->setAcceptDrops(true);
     ui->tableStatus->setDragDropMode(QAbstractItemView::DragDrop);
     ui->tableStatus->setDragEnabled(true);*/
     comCount = 0;
     dataBase.initConnection();
     dataBase.initConnection();
+
+    timerEvent(0);
+    startTimer(1000);
 }
 
 mysqlManager::~mysqlManager()
 {
     delete ui;
+}
+
+void mysqlManager::timerEvent(QTimerEvent *event)
+{
+    Q_UNUSED(event);
+    ui->time->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss ddd"));
 }
 
 void mysqlManager::addCom()
@@ -128,6 +153,54 @@ void mysqlManager::queryCom()
 
 }
 
+void mysqlManager::queryRecord()
+{
+    QString recordID, computerID, vipID, userID;
+    recordID = ui->qRecord->text();
+    computerID = ui->qCom->text();
+    vipID = ui->qVIP->text();
+    userID = ui->qUser->text();
+    static vector<usingRecord> recordList;
+    recordList.clear();
+    int i = 0;
+    string a, b, c ,d;
+    string * pa, * pb, * pc, * pd;
+    a = recordID.toStdString();
+    b = computerID.toStdString();
+    c = vipID.toStdString();
+    d = userID.toStdString();
+    if (a == "") pa = NULL;
+    else pa = &a;
+    if (b == "") pb = NULL;
+    else pb = &b;
+    if (c == "") pc = NULL;
+    else pc = &c;
+    if (d == "") pd = NULL;
+    else pd = &d;
+    dataBase.selectUsingRecord(pa, pb, pc, pd, recordList);
+    int recNumber = recordList.size();
+    ui->tableRecord->setRowCount(0);
+    ui->tableRecord->clearContents();
+    ui->tableRecord->setRowCount(recNumber);
+    for (vector<usingRecord>::iterator iter = recordList.begin(); iter != recordList.end(); iter++)
+    {
+        ui->tableRecord->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(iter -> recordID)));
+        string name;
+        dataBase.getUserName(iter->userID, name);
+        ui->tableRecord->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(name)));
+        ui->tableRecord->setItem(i, 2, new QTableWidgetItem(QString::fromStdString(iter -> vipID)));
+        ui->tableRecord->setItem(i, 3, new QTableWidgetItem(QString::fromStdString(iter -> computerID)));
+        QDateTime temp;
+        temp = QDateTime(QDate(2000, 1, 1));
+        temp.addSecs(iter->startTime);
+        ui->tableRecord->setItem(i, 4, new QTableWidgetItem(temp.toString("yyyy-MM-dd hh:mm:ss")));
+        temp = QDateTime(QDate(2000, 1, 1));
+        temp.addSecs(iter->endtTime);
+        ui->tableRecord->setItem(i, 5, new QTableWidgetItem(temp.toString("yyyy-MM-dd hh:mm:ss")));
+    }
+}
+
+
 void mysqlManager::addUsr()
 {
     usr = new newusr;
@@ -187,6 +260,30 @@ void mysqlManager::assignCom()
 void mysqlManager::dealAssign(assignInfo ainfo)
 {
     qDebug() << ainfo.cardNumber << ainfo.comNumber << ainfo.useCash << "\n";
+    int flag;
+    int startsec, endsec;
+    flag = dataBase.getComputerStatus(ainfo.comNumber);
+    if (f)
+    {
+        warninginfo(tr("该电脑暂时无法分配，请选择一台空闲的电脑"));
+        return;
+    }
+    static QDateTime begintime;
+    begintime = (QDate(2000, 1, 1) );
+    startsec = QDateTime::currentDateTime().secsTo(begintime);
+    endsec = ainfo.endTime.secsTo(begintime);
+    if (ainfo.useCash)
+        ainfo.cardNumber = "card" + ainfo.idNumber;
+    dataBase.changeComputerStatus(ainfo.comNumber.toStdString(), 1);
+    int maxid = dataBase.getmaxid();
+
+    flag = dataBase.Allocation(to_string(maxid), ainfo.comNumber.toStdString(),
+                               ainfo.idNumber.toStdString(), ainfo.cardNumber.toStdString(),
+                               startsec, endsec);
+    if (flag)
+        warninginfo(tr("分配失败，请确认输入合理！"));
+    else
+        successinfo(tr("分配成功！"));
 }
 
 void mysqlManager::repairCom()
@@ -233,6 +330,20 @@ void mysqlManager::sortStatus(int column)
 {
     static bool f = true;
     ui->tableStatus->sortByColumn(column, f ? Qt::AscendingOrder : Qt::DescendingOrder);
+    f = !f;
+}
+
+void mysqlManager::sortRecord(int column)
+{
+    static bool f = true;
+    ui->tableRecord->sortByColumn(column, f ? Qt::AscendingOrder : Qt::DescendingOrder);
+    f = !f;
+}
+
+void mysqlManager::sortRepair(int column)
+{
+    static bool f = true;
+    ui->tableRepair->sortByColumn(column, f ? Qt::AscendingOrder : Qt::DescendingOrder);
     f = !f;
 }
 
@@ -325,42 +436,4 @@ void mysqlManager::warninginfo(QString info)
     QMessageBox::warning(this, tr("Warning"), info,QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 }
 
-/*
-bool mysqlManager::eventFilter(QObject *obj, QEvent *eve)
-{
-    if(obj == ui->tableStatus->viewport())
-    {
-        if(eve->type() == QEvent::Drop)
-        {
-                const QMimeData *mime = ((QDropEvent*)eve)->mimeData();
-                QByteArray encodedata = mime->data("application/x-qabstractitemmodeldatalist");
-                if (encodedata.isEmpty())
-                {
-                    return false;
-                }
-                QDataStream stream(&encodedata, QIODevice::ReadOnly);
-                while (!stream.atEnd())
-                {
-                    int row, col;
-                    QMap<int,  QVariant> roleDataMap;
-                    stream >> row >> col >> roleDataMap;
-                    QTableWidgetItem* pDropItem = ui->tableStatus->itemAt(((QDropEvent*)eve)->pos());
-                    if(!pDropItem)
-                    {
-                        return true;
-                    }
-                    if(pDropItem->row() == row)
-                    {
-                        return true;
-                    }
-                    return true;    //不要交给系统处理，否则他会给你新增一行
-                }
-            }else
-            {
-                return QWidget::eventFilter(obj,eve);
-            }
-        }
-        return QWidget::eventFilter(obj,eve);
-}
-*/
 
