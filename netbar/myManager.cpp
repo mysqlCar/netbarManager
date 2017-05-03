@@ -604,3 +604,14 @@ int myManager::changeRepairmentStatus(string repairmentID, int repairmentStatus)
     }
     return 0;
 }
+
+int myManager::getMaxRecordID(string &s){
+    vector<usingRecord> Res;
+    int flag = myManager::selectUsingRecord(NULL, NULL, NULL, NULL, Res);
+    int len = Res.size();
+    s = "";
+    for (int i = 0; i < len; i++)
+        if (s < Res[i].recordID)
+            s = Res[i].recordID;
+    return flag;
+}

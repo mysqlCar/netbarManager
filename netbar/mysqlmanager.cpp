@@ -195,7 +195,7 @@ void mysqlManager::queryRecord()
         temp.addSecs(iter->startTime);
         ui->tableRecord->setItem(i, 4, new QTableWidgetItem(temp.toString("yyyy-MM-dd hh:mm:ss")));
         temp = QDateTime(QDate(2000, 1, 1));
-        temp.addSecs(iter->endtTime);
+        temp.addSecs(iter->endTime);
         ui->tableRecord->setItem(i, 5, new QTableWidgetItem(temp.toString("yyyy-MM-dd hh:mm:ss")));
     }
 }
@@ -262,8 +262,8 @@ void mysqlManager::dealAssign(assignInfo ainfo)
     qDebug() << ainfo.cardNumber << ainfo.comNumber << ainfo.useCash << "\n";
     int flag;
     int startsec, endsec;
-    flag = dataBase.getComputerStatus(ainfo.comNumber);
-    if (f)
+    flag = dataBase.getComputerStatus(ainfo.comNumber.toStdString());
+    if (flag)
     {
         warninginfo(tr("该电脑暂时无法分配，请选择一台空闲的电脑"));
         return;
@@ -275,7 +275,12 @@ void mysqlManager::dealAssign(assignInfo ainfo)
     if (ainfo.useCash)
         ainfo.cardNumber = "card" + ainfo.idNumber;
     dataBase.changeComputerStatus(ainfo.comNumber.toStdString(), 1);
-    int maxid = dataBase.getmaxid();
+
+    string maxid;
+    flag = dataBase.getMaxRecordID(maxid);
+    if (flag)
+        warninginfo(tr("查询失败"));
+    //这里我修了一修
 
     flag = dataBase.Allocation(to_string(maxid), ainfo.comNumber.toStdString(),
                                ainfo.idNumber.toStdString(), ainfo.cardNumber.toStdString(),
