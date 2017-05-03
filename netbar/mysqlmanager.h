@@ -56,6 +56,8 @@ private:
     void dealRepair(repairInfo);
     void getRecord();
     void queryRecord();
+    void queryRepair();
+    void modifyRepair();
 
     void removeComputer();
     void sortStatus(int);
