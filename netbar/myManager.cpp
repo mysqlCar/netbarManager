@@ -647,3 +647,14 @@ int myManager::getMaxRecordID(string &s){
             s = Res[i].recordID;
     return flag;
 }
+
+int myManager::getMaxRapairID(string &s){
+    vector<usingRecord> Res;
+    int flag = myManager::selectRepairment(NULL, NULL, -1, -1, -1, Res);
+    int len = Res.size();
+    s = "";
+    for (int i = 0; i < len; i++)
+        if (s < Res[i].repairmentID)
+            s = Res[i].repairmentID;
+    return flag;
+}

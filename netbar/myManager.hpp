@@ -66,6 +66,7 @@ class myManager{
     int rechargeVIP(string vipID, int rechargeAmount);
     int Allocation(string recordID, string computerID, string userID, string VIPid, int startTime, int endTime);
     int getMaxRecordID(string &s);//(求最大的recordid，以便在分配时指定)
+    int getMaxRepairID(string &s);
 };
 
 
