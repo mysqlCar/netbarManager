@@ -177,7 +177,7 @@ int myManager::Initialization(){
 
     mysqlQuery = "create table Repairment\
                 (\
-                    repairmentID char(20) NOT NULL,\
+                    repairmentID int NOT NULL,\
                     computerID char(10) NOT NULL,\
                     repairmentReason int NOT NULL,\
                     repairmentDate int NOT NULL,\
@@ -246,12 +246,12 @@ int myManager::newUser(string userID, string userName){
     return 0;
 }
 
-int myManager::newRepairment(string repairmentID, string computerID, int repairmentReason, int repairmentDate, int repairmentStatus){
+int myManager::newRepairment(int repairmentID, string computerID, int repairmentReason, int repairmentDate, int repairmentStatus){
     string mysqlQuery;
     int flag;
 
     mysqlQuery = "insert Into Repairment values \
-                    ('" + repairmentID + "', '" + computerID + "', '" + to_string(repairmentReason) + "', " + to_string(repairmentDate) + "', " + to_string(repairmentStatus) + ", 0)";
+                    ('" + to_string(repairmentID) + "', '" + computerID + "', '" + to_string(repairmentReason) + "', " + to_string(repairmentDate) + "', " + to_string(repairmentStatus) + ", 0)";
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
         cout << "Failed to add the repairment" << endl;
@@ -412,7 +412,7 @@ int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipC
     return -1;
 }
 
-int myManager::selectRepairment(string *repairmentID, string *computerID, int repairmentReason, int repairmentDate, int repairmentStatus, vector<repairment> &Res){
+int myManager::selectRepairment(int repairmentID, string *computerID, int repairmentReason, int repairmentDate, int repairmentStatus, vector<repairment> &Res){
     string mysqlQuery;
     MYSQL_RES * result;
     MYSQL_ROW row;
@@ -421,8 +421,8 @@ int myManager::selectRepairment(string *repairmentID, string *computerID, int re
     mysqlQuery = "select * \
                     from Repairment \
                     where 1";
-    if (repairmentID != NULL)
-        mysqlQuery = mysqlQuery + " and repairmentID = '" + *repairmentID + "'";
+    if (repairmentID != -1)
+        mysqlQuery = mysqlQuery + " and repairmentID = '" + to_string(repairmentID) + "'";
     if (computerID != NULL)
         mysqlQuery = mysqlQuery + " and computerID = '" + *computerID + "'";
     if (repairmentReason != -1)
@@ -447,7 +447,7 @@ int myManager::selectRepairment(string *repairmentID, string *computerID, int re
 
     repairment X;
     while ((row = mysql_fetch_row(result)) != NULL){
-        X.repairmentID = row[0];
+        X.repairmentID = atoi(row[0]);
         X.computerID = row[1];
         X.repairmentReason = atoi(row[2]);
         X.repairmentDate = atoi(row[3]);
@@ -458,7 +458,7 @@ int myManager::selectRepairment(string *repairmentID, string *computerID, int re
     return -1;
 }
 
-int myManager::selectUsingRecord(string *recordID, string *computerID, string *vipID, string *userID, vector<usingRecord> &Res){
+int myManager::selectUsingRecord(int recordID, string *computerID, string *vipID, string *userID, vector<usingRecord> &Res){
     string mysqlQuery;
     MYSQL_RES * result;
     MYSQL_ROW row;
@@ -467,8 +467,8 @@ int myManager::selectUsingRecord(string *recordID, string *computerID, string *v
     mysqlQuery = "select * \
                     from UsingRecord \
                     where 1";
-    if (recordID != NULL)
-        mysqlQuery = mysqlQuery + " and recordID = '" + *recordID + "'";
+    if (recordID != -1)
+        mysqlQuery = mysqlQuery + " and recordID = '" + to_string(recordID) + "'";
     if (computerID != NULL)
         mysqlQuery = mysqlQuery + " and computerID = '" + *computerID + "'";
     if (vipID != NULL)
@@ -491,7 +491,7 @@ int myManager::selectUsingRecord(string *recordID, string *computerID, string *v
 
     usingRecord X;
     while ((row = mysql_fetch_row(result)) != NULL){
-        X.recordID = row[0];
+        X.recordID = atoi(row[0]);
         X.computerID = row[1];
         X.vipID = row[2];
         X.userID = row[3];
@@ -553,12 +553,12 @@ int myManager::changeComputerStatus(string computerID, int computerStatus){
     return 0;
 }
 
-int myManager::Allocation(string recordID, string computerID, string vipID, string userID, int startTime, int endTime){
+int myManager::Allocation(int recordID, string computerID, string vipID, string userID, int startTime, int endTime){
     string mysqlQuery;
     int flag;
 
     mysqlQuery = "insert Into UsingRecord values ('"
-                    + recordID + "', '" + computerID + "', '" + vipID + "', '"
+                    + to_string(recordID) + "', '" + computerID + "', '" + vipID + "', '"
                     + userID + "', " + to_string(startTime) + ", " + to_string(endTime) + ")";
 
     cout << mysqlQuery << endl;
@@ -621,15 +621,15 @@ int myManager::rechargeVIP(string vipID, int rechargeAmount){
     return 0;
 }
 
-int myManager::changeRepairmentStatus(string repairmentID, int repairmentStatus){
+int myManager::changeRepairmentStatus(int repairmentID, int repairmentStatus){
     string mysqlQuery;
     int flag;
 
     mysqlQuery = "update Repairment set repairmentStatus = " + to_string(repairmentStatus) +
-                    " where repairmentID = '" + repairmentID + "'" ;
+                    " where repairmentID = '" + to_string(repairmentID) + "'" ;
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
-        cout << "Failed to change the repairment status + " + repairmentID << endl;
+        cout << "Failed to change the repairment status + " + to_string(repairmentID) << endl;
         cout << "Error Messege:" << endl;
         cout << mysql_error(&mysqlClient) <<endl << endl;
         return 1;
@@ -637,22 +637,22 @@ int myManager::changeRepairmentStatus(string repairmentID, int repairmentStatus)
     return 0;
 }
 
-int myManager::getMaxRecordID(string &s){
+int myManager::getMaxRecordID(int &s){
     vector<usingRecord> Res;
     int flag = myManager::selectUsingRecord(NULL, NULL, NULL, NULL, Res);
     int len = Res.size();
-    s = "";
+    s = -1;
     for (int i = 0; i < len; i++)
         if (s < Res[i].recordID)
             s = Res[i].recordID;
     return flag;
 }
 
-int myManager::getMaxRapairID(string &s){
-    vector<usingRecord> Res;
-    int flag = myManager::selectRepairment(NULL, NULL, -1, -1, -1, Res);
+int myManager::getMaxRepairID(int &s){
+    vector<repairment> Res;
+    int flag = myManager::selectRepairment(-1, NULL, -1, -1, -1, Res);
     int len = Res.size();
-    s = "";
+    s = -1;
     for (int i = 0; i < len; i++)
         if (s < Res[i].repairmentID)
             s = Res[i].repairmentID;

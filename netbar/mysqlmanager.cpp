@@ -164,13 +164,14 @@ void mysqlManager::queryRecord()
     recordList.clear();
     int i = 0;
     string a, b, c ,d;
-    string * pa, * pb, * pc, * pd;
+    int  pa;
+    string * pb, * pc, * pd;
     a = recordID.toStdString();
     b = computerID.toStdString();
     c = vipID.toStdString();
     d = userID.toStdString();
-    if (a == "") pa = NULL;
-    else pa = &a;
+    if (a == "") pa = -1;
+    else pa = stoi(a);
     if (b == "") pb = NULL;
     else pb = &b;
     if (c == "") pc = NULL;
@@ -184,7 +185,7 @@ void mysqlManager::queryRecord()
     ui->tableRecord->setRowCount(recNumber);
     for (vector<usingRecord>::iterator iter = recordList.begin(); iter != recordList.end(); iter++)
     {
-        ui->tableRecord->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(iter -> recordID)));
+        ui->tableRecord->setItem(i, 0, new QTableWidgetItem(QString::number(iter -> recordID)));
         string name;
         dataBase.getUserName(iter->userID, name);
         ui->tableRecord->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(name)));
@@ -276,7 +277,7 @@ void mysqlManager::dealAssign(assignInfo ainfo)
         ainfo.cardNumber = "card" + ainfo.idNumber;
     dataBase.changeComputerStatus(ainfo.comNumber.toStdString(), 1);
 
-    string maxid;
+    int maxid;
     flag = dataBase.getMaxRecordID(maxid);
     if (flag)
         warninginfo(tr("查询失败"));

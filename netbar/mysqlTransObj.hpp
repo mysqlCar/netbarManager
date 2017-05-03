@@ -8,7 +8,7 @@ using namespace std;
 
 class vipCard{
 	public:
-	string vipID, userID;
+    string vipID, userID;
     int vipBalance, vipRank;
     void println(){
         cout << vipID << " " << userID << " " << vipBalance << " " << vipRank <<endl;
@@ -34,7 +34,8 @@ class user{
 
 class usingRecord{
 	public:
-	string recordID, computerID, vipID, userID;
+    int recordID;
+    string computerID, vipID, userID;
 	int startTime, endTime;
 	void println(){
         cout << recordID << " " << computerID << " " << vipID << " " << userID << " " << startTime << " " << endTime <<endl;
@@ -43,7 +44,8 @@ class usingRecord{
 
 class repairment{
 	public:
-    string repairmentID, computerID;
+    int repairmentID;
+    string computerID;
     int repairmentReason, repairmentDate, repairmentStatus;
 	void println(){
         cout << repairmentID << " " << computerID << " " << repairmentReason << " " << repairmentDate << " " << repairmentStatus <<endl;
