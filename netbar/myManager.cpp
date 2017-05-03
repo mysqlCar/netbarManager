@@ -414,7 +414,7 @@ int myManager::selectRepairment(string *repairmentID, string *computerID, int re
     while ((row = mysql_fetch_row(result)) != NULL){
         X.repairmentID = row[0];
         X.computerID = row[1];
-        X.repairmentReason = row[2];
+        X.repairmentReason = atoi(row[2]);
         X.repairmentDate = atoi(row[3]);
         X.repairmentStatus = atoi(row[4]);
         Res.push_back(X);
@@ -607,5 +607,16 @@ int myManager::getMaxRecordID(string &s){
     for (int i = 0; i < len; i++)
         if (s < Res[i].recordID)
             s = Res[i].recordID;
+    return flag;
+}
+
+int myManager::getMaxRapairID(string &s){
+    vector<usingRecord> Res;
+    int flag = myManager::selectRepairment(NULL, NULL, -1, -1, -1, Res);
+    int len = Res.size();
+    s = "";
+    for (int i = 0; i < len; i++)
+        if (s < Res[i].repairmentID)
+            s = Res[i].repairmentID;
     return flag;
 }

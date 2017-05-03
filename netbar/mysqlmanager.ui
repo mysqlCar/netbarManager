@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="status">
      <attribute name="title">
@@ -152,7 +152,7 @@
         <x>560</x>
         <y>320</y>
         <width>160</width>
-        <height>21</height>
+        <height>22</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -497,45 +497,6 @@
        <string>查询</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_6">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>270</y>
-        <width>54</width>
-        <height>12</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>流水号</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_7">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>300</y>
-        <width>54</width>
-        <height>12</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>编号</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_8">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>330</y>
-        <width>54</width>
-        <height>12</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>修理状态</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="mRepair">
       <property name="geometry">
        <rect>
@@ -549,6 +510,79 @@
        <string>更改</string>
       </property>
      </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_8">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>270</y>
+        <width>160</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_8">
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>流水号  </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="repairID"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_9">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>300</y>
+        <width>160</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>编号    </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="repairNum"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_10">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>330</y>
+        <width>160</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QLabel" name="label_13">
+         <property name="text">
+          <string>修理状态</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="repairSta"/>
+       </item>
+      </layout>
+     </widget>
+     <zorder>tableRepair</zorder>
+     <zorder>qRepair</zorder>
+     <zorder>mRepair</zorder>
+     <zorder>horizontalLayoutWidget_8</zorder>
+     <zorder>horizontalLayoutWidget_9</zorder>
+     <zorder>horizontalLayoutWidget_10</zorder>
+     <zorder>label_13</zorder>
     </widget>
    </widget>
    <widget class="QLabel" name="time">
