@@ -9,7 +9,7 @@ newcard::newcard(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &newcard::upd);
     connect(ui->checkName, &QPushButton::clicked, this, &newcard::getname);
-    connect(ui->checkNumber, &QPushButton::clicked,this, )
+    connect(ui->checkNumber, &QPushButton::clicked,this, &newcard::checkNumber);
     ui->name->setFocusPolicy(Qt::NoFocus);
     card_info.ok = true;
 
@@ -27,9 +27,11 @@ void newcard::upd()
     card_info.name = ui->name->text();
     card_info.cardNumber = ui->cardNumber->text();
     int flag = 1;
+    string Name;
     flag = flag && dataBase.getUserName(ui->id->text().toStdString(), Name);
+    ui->cardNumber->text() = QString::fromStdString(Name);
     flag = flag && dataBase.checkVIPNumber(ui->cardNumber->text().toStdString());
-    card_info.ok = card_info.ok &&　flag;
+    card_info.ok = card_info.ok && flag;
     send();
 }
 
