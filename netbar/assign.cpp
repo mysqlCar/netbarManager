@@ -7,7 +7,7 @@ assign::assign(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->endTime->setDateTime(QDateTime::currentDateTime());
-    ui->endTime->setDateTimeRange(QDateTime::currentDateTime(), NULL);
+    ui->endTime->setDateTimeRange(QDateTime::currentDateTime(), QDateTime(QDate(2100, 1, 1)));
     connect(ui->cash, &QCheckBox::toggled, this, &assign::enCard);
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &assign::upd);
 }
