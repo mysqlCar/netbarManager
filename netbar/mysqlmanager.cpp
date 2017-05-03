@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 #include <QDebug>
 #include <QMessageBox>
+#include <QInputDialog>
 
 
 mysqlManager::mysqlManager(QWidget *parent) :
@@ -16,6 +17,8 @@ mysqlManager::mysqlManager(QWidget *parent) :
     connect(ui->buttonAssign, &QPushButton::clicked, this, &mysqlManager::assignCom);
     connect(ui->buttonRepair, &QPushButton::clicked, this, &mysqlManager::repairCom);
     connect(ui->buttonRecharge, &QPushButton::clicked, this, &mysqlManager::beStrong);
+    connect(ui->buttonQuery, &QPushButton::clicked, this, &mysqlManager::queryCom);
+    connect(ui->buttonReset, &QPushButton::clicked, this, &mysqlManager::resetdata);
     connect(ui->usingRecord, &QPushButton::clicked, this, &mysqlManager::getRecord);
     connect(ui->tableStatus->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortStatus);
     connect(ui->removeCom, &QPushButton::clicked, this, &mysqlManager::removeComputer);
@@ -47,6 +50,15 @@ void mysqlManager::addCom()
     delete cpu;
 }
 
+void mysqlManager::resetdata()
+{
+    QString password;
+    bool ok;
+    password = QInputDialog::getText(this, tr("确认"), tr("请输入密码"), QLineEdit::Password, NULL, &ok);
+    if (ok && password == "123456")
+        dataBase.Initialization();
+}
+
 void mysqlManager::dealCom(infocpu cinfo)
 {
     qDebug() << cinfo.number << cinfo.model << comCount;
@@ -66,20 +78,55 @@ void mysqlManager::dealCom(infocpu cinfo)
     comCount++;
 }
 
-/*void mysqlManager::calcCom()
+void mysqlManager::queryCom()
 {
-    int flag = dataBase.newComputer();
-    if (flag)
+    QString num, model;
+    int status;
+    num = ui->qNumber->text();
+    model = ui->qModel->text();
+    status = ui->qStatus->currentIndex() - 1;
+    static vector<computer> comList;
+    comList.clear();
+    int i = 0;
+    string a, b;
+    string * pa, * pb;
+    a = num.toStdString();
+    b = model.toStdString();
+    if (a == "") pa = NULL;
+    else pa = &a;
+    if (b == "") pb = NULL;
+    else pb = &b;
+    dataBase.selectComputer(pa, pb, status, comList);
+    int comNumber = comList.size();
+    ui->tableStatus->setRowCount(0);
+    ui->tableStatus->clearContents();
+    ui->tableStatus->setRowCount(comNumber);
+    for (vector<computer>::iterator iter = comList.begin(); iter != comList.end(); iter++)
     {
-        warninginfo("添加用户失败，请确保当前添加电脑编号唯一");
-        return;
+        ui->tableStatus->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(iter -> computerID)));
+        ui->tableStatus->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(iter -> computerType)));
+        switch (iter -> computerStatus)
+        {
+        case (-1):
+        {
+            ui->tableStatus->removeRow(i);
+            continue;
+        }
+        case(0):
+        {
+            ui->tableStatus->setItem(i, 2, new QTableWidgetItem(QString(tr("关机"))));
+            i++;
+            break;
+        }
+        case(1):
+        {
+            ui->tableStatus->setItem(i, 2, new QTableWidgetItem(QString(tr("使用中"))));
+            i++;
+        }
+        }
     }
-    successinfo("添加成功");
-    ui-> tableStatus ->setRowCount(ui->tableStatus->rowCount() + 1);
-    ui-> tableStatus ->setItem(ui->tableStatus->rowCount() - 1, 0, new QTableWidgetItem(cinfo.number));
-    ui-> tableStatus ->setItem(ui->tableStatus->rowCount() - 1, 1, new QTableWidgetItem(cinfo.model));
-    comCount++;
-}*/
+
+}
 
 void mysqlManager::addUsr()
 {
@@ -166,6 +213,15 @@ void mysqlManager::beStrong()
 void mysqlManager::dealStrong(rechargeInfo rinfo)
 {
     qDebug() << rinfo.cardNumber << rinfo.money << endl;
+    int flag = dataBase.rechargeVIP(rinfo.cardNumber.toStdString(), rinfo.money.toInt());
+    if (flag)
+    {
+        warninginfo("充值失败，请输入正确的卡号和充值金额！");
+    }
+    else
+    {
+        successinfo("充值成功，你变强了！");
+    }
 }
 
 void mysqlManager::getRecord()
@@ -181,7 +237,11 @@ void mysqlManager::sortStatus(int column)
 }
 
 void mysqlManager::removeComputer()
-{
+{    
+    QString num;
+    int r = ui->tableStatus->currentRow();
+    num = ui->tableStatus->item(r, 1)->text();
+    dataBase.abandonComputer(num.toStdString());
     ui->tableStatus->removeRow(ui->tableStatus->currentRow());
 }
 
@@ -303,3 +363,4 @@ bool mysqlManager::eventFilter(QObject *obj, QEvent *eve)
         return QWidget::eventFilter(obj,eve);
 }
 */
+

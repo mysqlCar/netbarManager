@@ -27,6 +27,7 @@ public:
 protected:
     bool eventFilter(QObject *obj, QEvent *eve);
 */
+
 private:
     Ui::mysqlManager *ui;
 
@@ -39,6 +40,7 @@ private:
     recharge *charge;
     repair *mend;
 
+    void queryCom();
     void addCom();
     void dealCom(infocpu);
     void addUsr();
@@ -58,6 +60,7 @@ private:
     void statusUp();
     void statusDown();
     void refreshStatus();
+    void resetdata();
 
     void successinfo(QString);
     void warninginfo(QString);

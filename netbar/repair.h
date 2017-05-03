@@ -9,7 +9,8 @@ class repair;
 
 struct repairInfo
 {
-    QString comNumber, errNumber;
+    QString comNumber;
+    int errNumber;
 };
 
 class repair : public QDialog

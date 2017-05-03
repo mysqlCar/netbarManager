@@ -17,6 +17,6 @@ repair::~repair()
 void repair::upd()
 {
     mendInfo.comNumber = ui ->comNumber ->text();
-    mendInfo.errNumber = ui ->errNum ->text();
+    mendInfo.errNumber = ui ->errNum ->currentIndex();
     send();
 }

@@ -69,7 +69,18 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="errNum"/>
+     <widget class="QComboBox" name="errNum">
+      <item>
+       <property name="text">
+        <string>硬件故障</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>软件故障</string>
+       </property>
+      </item>
+     </widget>
     </item>
    </layout>
   </widget>
