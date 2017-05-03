@@ -39,8 +39,8 @@ class myManager{
     int newComputer(string computerID, string computerType);
     int newUser(string userID, string userName);
     int newVIP(string VIPID, string userID, int rechargeAmount);
-    int newRepairment(string repairmentID, string computerID, string repairmentReason, int repairmentDate, int repairmentStatus);
-//  int newUsingRecord(string repairmentID, string computerID, int rechargeAmount, string repairmentReason, int repairmentDate);
+    int newRepairment(string repairmentID, string computerID, int repairmentReason, int repairmentDate, int repairmentStatus);
+//  int newUsingRecord(string recordID, string computerID, string vipID, string userID);
 
     int abandonComputer(string computerID);
 //  int abandonUser(string userID);
@@ -51,7 +51,7 @@ class myManager{
     int selectComputer(string *computerID, string *computerType, int computerStatus, vector<computer> &Res);
 //  int selectUser(string *userID, string *userName, vector<User> &Res);
     int selectVIP(string *vipID, string *userID, int vipRank, vector<vipCard> &Res);
-    int selectRepairment(string *repairmentID, string *computerID, string *repairmentReason, int repairmentDate, int repairmentStatus, vector<repairment> &Res);
+    int selectRepairment(string *repairmentID, string *computerID, int repairmentReason, int repairmentDate, int repairmentStatus, vector<repairment> &Res);
     int selectUsingRecord(string *recordID, string *computerID, string *vipID, string *userID, vector<usingRecord> &Res);
 
     int changeComputerStatus(string computerID, int computerStatus);

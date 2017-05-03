@@ -1,11 +1,5 @@
 #include "myManager.hpp"
 
-string ItoS(int x){
-    stringstream stream;
-    stream << x;
-    return stream.str();
-}
-
 void myManager::setHosts(string hosts){
     this -> hosts = hosts;
 }
@@ -185,7 +179,7 @@ int myManager::Initialization(){
                 (\
                     repairmentID char(20) NOT NULL,\
                     computerID char(10) NOT NULL,\
-                    repairmentReason char(100) NOT NULL,\
+                    repairmentReason int NOT NULL,\
                     repairmentDate int NOT NULL,\
                     repairmentStatus int NOT NULL,\
                     primary key (repairmentID),\
@@ -252,12 +246,12 @@ int myManager::newUser(string userID, string userName){
     return 0;
 }
 
-int myManager::newRepairment(string repairmentID, string computerID, string repairmentReason, int repairmentDate, int repairmentStatus){
+int myManager::newRepairment(string repairmentID, string computerID, int repairmentReason, int repairmentDate, int repairmentStatus){
     string mysqlQuery;
     int flag;
 
     mysqlQuery = "insert Into Repairment values \
-                    ('" + repairmentID + "', '" + computerID + "', '" + repairmentReason + "', " + to_string(repairmentDate) + "', " + to_string(repairmentStatus) + ", 0)";
+                    ('" + repairmentID + "', '" + computerID + "', '" + to_string(repairmentReason) + "', " + to_string(repairmentDate) + "', " + to_string(repairmentStatus) + ", 0)";
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
         cout << "Failed to add the repairment" << endl;
@@ -312,7 +306,7 @@ int myManager::selectComputer(string *computerID, string *computerType, int comp
     if (computerType != NULL)
         mysqlQuery = mysqlQuery + " and computerType = '" + *computerType + "'";
     if (computerStatus != -1)
-        mysqlQuery = mysqlQuery + " and computerStatus = " + ItoS(computerStatus);
+        mysqlQuery = mysqlQuery + " and computerStatus = " + to_string(computerStatus);
 
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
@@ -383,7 +377,7 @@ int myManager::selectUsingRecord(string *recordID, string *computerID, string *v
     return -1;
 }
 
-int myManager::selectRepairment(string *repairmentID, string *computerID, string *repairmentReason, int repairmentDate, int repairmentStatus, vector<repairment> &Res){
+int myManager::selectRepairment(string *repairmentID, string *computerID, int repairmentReason, int repairmentDate, int repairmentStatus, vector<repairment> &Res){
     string mysqlQuery;
     MYSQL_RES * result;
     MYSQL_ROW row;
@@ -396,12 +390,12 @@ int myManager::selectRepairment(string *repairmentID, string *computerID, string
         mysqlQuery = mysqlQuery + " and repairmentID = '" + *repairmentID + "'";
     if (computerID != NULL)
         mysqlQuery = mysqlQuery + " and computerID = '" + *computerID + "'";
-    if (repairmentReason != NULL)
-        mysqlQuery = mysqlQuery + " and repairmentReason = '" + *repairmentReason + "'";
+    if (repairmentReason != -1)
+        mysqlQuery = mysqlQuery + " and repairmentReason = '" + to_string(repairmentReason) + "'";
     if (repairmentDate != -1)
-        mysqlQuery = mysqlQuery + " and repairmentDate = '" + ItoS(repairmentDate) + "'";
+        mysqlQuery = mysqlQuery + " and repairmentDate = '" + to_string(repairmentDate) + "'";
     if (repairmentStatus != -1)
-        mysqlQuery = mysqlQuery + " and repairmentStatus = '" + ItoS(repairmentStatus) + "'";
+        mysqlQuery = mysqlQuery + " and repairmentStatus = '" + to_string(repairmentStatus) + "'";
 
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
@@ -443,7 +437,7 @@ int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipC
     if (userID != NULL)
         mysqlQuery = mysqlQuery + " and userID = '" + *userID + "'";
     if (vipRank != -1)
-        mysqlQuery = mysqlQuery + " and vipRank = '" + ItoS(vipRank) + "'";
+        mysqlQuery = mysqlQuery + " and vipRank = '" + to_string(vipRank) + "'";
 
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
@@ -509,7 +503,7 @@ int myManager::changeComputerStatus(string computerID, int computerStatus){
     string mysqlQuery;
     int flag;
 
-    mysqlQuery = "update Computer set computerStatus = " + ItoS(computerStatus) +
+    mysqlQuery = "update Computer set computerStatus = " + to_string(computerStatus) +
                     " where computerID = '" + computerID + "'" ;
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
