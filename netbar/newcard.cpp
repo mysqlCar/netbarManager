@@ -41,7 +41,7 @@ void newcard::getname()
     int flag;
     flag = dataBase.getUserName(ui->id->text().toStdString(), Name);
     if (!flag)
-        ui->name->setText(tr("储振东"));
+        ui->name->setText(QString::fromStdString(Name));
     else
     {
         QMessageBox::warning(this, tr("Warning"), tr("查无此人，请先建立对应用户"),QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
