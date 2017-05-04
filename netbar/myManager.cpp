@@ -567,10 +567,12 @@ int myManager::selectUsingRecord(int recordID, string *computerID, string *vipID
     return 0;
 }
 
-int myManager::checkVIPNumber(string vipID)
+bool myManager::checkVIPNumber(string vipID)
 {
     vector<vipCard> Res;
-    return selectVIP(&vipID, NULL, -1, Res);
+    Res.clear();
+    int flag = selectVIP(&vipID, NULL, -1, Res);
+    return (Res.size() > 0) & (flag == 0);
 }
 
 int myManager::getComputerStatus(string computerID){
@@ -703,6 +705,7 @@ int myManager::changeRepairmentStatus(int repairmentID, int repairmentStatus){
 
 int myManager::getMaxRecordID(int &s){
     vector<usingRecord> Res;
+    Res.clear();
     int flag = myManager::selectUsingRecord(-1, NULL, NULL, NULL, Res);
     int len = Res.size();
     s = -1;
