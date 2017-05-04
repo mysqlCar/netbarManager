@@ -40,13 +40,13 @@ class myManager{
     int newUser(string userID, string userName);
     int newVIP(string VIPID, string userID, int rechargeAmount);
     int newRepairment(int repairmentID, string computerID, int repairmentReason, int repairmentDate, int repairmentStatus);
-//  int newUsingRecord(int recordID, string computerID, string vipID, string userID);
+    int newUsingRecord(int recordID, string computerID, string vipID, string userID, int startTime, int endTime);
 
     int abandonComputer(string computerID);
-//  int abandonUser(string userID);
+    int abandonUser(string userID);
     int abandonVIP(string vipID);
-//  int abandontRepairment(int repairmentID);
-//  int abandonUsingRecord(int recordID);
+    int abandonRepairment(int repairmentID);
+    int abandonUsingRecord(int recordID);
 
     int selectComputer(string *computerID, string *computerType, int computerStatus, vector<computer> &Res);
     int selectUser(string *userID, string *userName, vector<user> &Res);

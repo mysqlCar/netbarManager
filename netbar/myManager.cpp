@@ -155,7 +155,7 @@ int myManager::Initialization(){
 
     mysqlQuery = "create table UsingRecord\
                 (\
-                    recordID char(20) NOT NULL,\
+                    recordID int NOT NULL,\
                     computerID char(10) NOT NULL,\
                     vipID char(20) NOT NULL,\
                     userID char(20) NOT NULL,\
@@ -193,6 +193,8 @@ int myManager::Initialization(){
         return 1;
     }
     else cout << "Succeed to create table Repairment!" << endl;
+
+    cout << "Complete!" << endl;
 
     return 0;
 }
@@ -251,7 +253,23 @@ int myManager::newRepairment(int repairmentID, string computerID, int repairment
     int flag;
 
     mysqlQuery = "insert Into Repairment values \
-                    ('" + to_string(repairmentID) + "', '" + computerID + "', '" + to_string(repairmentReason) + "', " + to_string(repairmentDate) + "', " + to_string(repairmentStatus) + ", 0)";
+                    ('" + to_string(repairmentID) + "', '" + computerID + "', '" + to_string(repairmentReason) + "', " + to_string(repairmentDate) + "', " + to_string(repairmentStatus) + ")";
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to add the repairment" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
+
+int myManager::newUsingRecord(int recordID, string computerID, string vipID, string userID, int startTime, int endTime){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "insert Into UsingRecord values \
+                    ('" + to_string(recordID) + "', '" + computerID + "', '" + vipID + "', " + userID + ", " + to_string(startTime) + ", " + to_string(endTime) + ")";
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
         cout << "Failed to add the repairment" << endl;
@@ -277,6 +295,21 @@ int myManager::abandonComputer(string computerID){
     return 0;
 }
 
+int myManager::abandonUser(string userID){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "delete from User where userID = '" + userID + "'";
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to abandon the User!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
+
 int myManager::abandonVIP(string vipID){
     string mysqlQuery;
     int flag;
@@ -285,6 +318,36 @@ int myManager::abandonVIP(string vipID){
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
         cout << "Failed to abandon the VIP card!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
+
+int myManager::abandonRepairment(int repairmentID){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "delete from Repairment where repairmentID = '" + to_string(repairmentID) + "'";
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to abandon the Repairment!" << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+    return 0;
+}
+
+int myManager::abandonUsingRecord(int recordID){
+    string mysqlQuery;
+    int flag;
+
+    mysqlQuery = "delete from UsingRecord where recordID = '" + to_string(recordID) + "'";
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to abandon the UsingRecord!" << endl;
         cout << "Error Messege:" << endl;
         cout << mysql_error(&mysqlClient) <<endl << endl;
         return 1;
@@ -639,7 +702,7 @@ int myManager::changeRepairmentStatus(int repairmentID, int repairmentStatus){
 
 int myManager::getMaxRecordID(int &s){
     vector<usingRecord> Res;
-    int flag = myManager::selectUsingRecord(NULL, NULL, NULL, NULL, Res);
+    int flag = myManager::selectUsingRecord(-1, NULL, NULL, NULL, Res);
     int len = Res.size();
     s = -1;
     for (int i = 0; i < len; i++)
