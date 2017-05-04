@@ -30,6 +30,8 @@ mysqlManager::mysqlManager(QWidget *parent) :
     connect(ui->comPushUp, &QPushButton::clicked, this, &mysqlManager::statusUp);
     connect(ui->comPushDown, &QPushButton::clicked, this, &mysqlManager::statusDown);
     connect(ui->queryRecord, &QPushButton::clicked, this, &mysqlManager::queryRecord);
+    connect(ui->qRepair, &QPushButton::clicked, this, &mysqlManager::queryRepair);
+    connect(ui->mRepair, &QPushButton::clicked, this, &mysqlManager::modifyRepair);
     ui->tableStatus->viewport()->installEventFilter(this);
     ui->tableStatus->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableStatus->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -100,6 +102,7 @@ void mysqlManager::dealCom(infocpu cinfo)
     ui-> tableStatus ->setRowCount(ui->tableStatus->rowCount() + 1);
     ui-> tableStatus ->setItem(ui->tableStatus->rowCount() - 1, 0, new QTableWidgetItem(cinfo.number));
     ui-> tableStatus ->setItem(ui->tableStatus->rowCount() - 1, 1, new QTableWidgetItem(cinfo.model));
+    ui-> tableStatus ->setItem(ui->tableStatus->rowCount() - 1, 2, new QTableWidgetItem("关机"));
     comCount++;
 }
 
@@ -110,6 +113,9 @@ void mysqlManager::queryCom()
     num = ui->qNumber->text();
     model = ui->qModel->text();
     status = ui->qStatus->currentIndex() - 1;
+    ui->qNumber->clear();
+    ui->qModel->clear();
+    ui->qStatus->clear();
     static vector<computer> comList;
     comList.clear();
     int i = 0;
@@ -201,6 +207,62 @@ void mysqlManager::queryRecord()
     }
 }
 
+void mysqlManager::queryRepair()
+{
+    QString repairID, comNumber, repStatus;
+    int pd;
+    repairID = ui->repairID->text();
+    comNumber = ui->repairNum->text();
+    repStatus = ui->repairSta->text();
+    pd = ui->repairReason->currentIndex() - 1;
+    ui->repairID->clear();
+    ui->repairNum->clear();
+    ui->repairSta->clear();
+    ui->repairReason->setCurrentIndex(0);
+    static vector<repairment> repList;
+    repList.clear();
+    int i = 0;
+    string a, b, c;
+    int  pa, pc;
+    string * pb;
+    a = repairID.toStdString();
+    b = comNumber.toStdString();
+    c = repStatus.toStdString();
+    if (a == "") pa = -1;
+    else pa = stoi(a);
+    if (b == "") pb = NULL;
+    else pb = &b;
+    if (c == "") pc = -1;
+    else pc = stoi(c);
+    dataBase.selectRepairment(pa, pb, pd, -1, pc, repList);
+    int repNumber = repList.size();
+    ui->tableRepair->setRowCount(0);
+    ui->tableRepair->clearContents();
+    ui->tableRepair->setRowCount(repNumber);
+    for (vector<repairment>::iterator iter = repList.begin(); iter != repList.end(); iter++)
+    {
+        ui->tableRepair->setItem(i, 0, new QTableWidgetItem(QString::number(iter -> repairmentID)));
+        ui->tableRepair->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(iter -> computerID)));
+        QDateTime temp;
+        temp = QDateTime(QDate(2000, 1, 1));
+        temp.addSecs(iter->repairmentDate);
+        ui->tableRecord->setItem(i, 2, new QTableWidgetItem(temp.toString("yyyy-MM-dd hh:mm:ss")));
+        switch (iter -> repairmentReason){
+        case 0:
+            ui->tableRepair->setItem(i, 3, new QTableWidgetItem(tr("硬件故障")));
+            break;
+        default:
+            ui->tableRepair->setItem(i, 3, new QTableWidgetItem(tr("软件故障")));
+        }
+        switch (iter -> repairmentReason){
+        case 0:
+            ui->tableRepair->setItem(i, 4, new QTableWidgetItem(tr("未修复")));
+            break;
+        default:
+            ui->tableRepair->setItem(i, 4, new QTableWidgetItem(tr("已修复")));
+        }
+    }
+}
 
 void mysqlManager::addUsr()
 {
@@ -282,14 +344,41 @@ void mysqlManager::dealAssign(assignInfo ainfo)
     if (flag)
         warninginfo(tr("查询失败"));
     //这里我修了一修
+    static vector<vipCard> k;
+    int cost;
+    cost = (endsec-startsec)/3600 + 1;
+    if (! ((endsec-startsec) % 3600))
+        cost --;
+    cost *= 2;
+    k.clear();
+    if (!ainfo.useCash)
+    {
+        string t;
+        t = ainfo.cardNumber.toStdString();
+        flag = dataBase.selectVIP(&t, NULL, -1, k);
+        if (flag)
+        {
+            warninginfo(tr("指定会员卡无效"));
+             return;
+        }
+        if (k[0].vipBalance < cost)
+        {
+            warninginfo(tr("余额不足，请先充值！"));
+            return;
+        }
+    }
 
-    flag = dataBase.Allocation(maxid, ainfo.comNumber.toStdString(),
+    flag = dataBase.Allocation(maxid + 1, ainfo.comNumber.toStdString(),
                                ainfo.idNumber.toStdString(), ainfo.cardNumber.toStdString(),
                                startsec, endsec);
     if (flag)
         warninginfo(tr("分配失败，请确认输入合理！"));
     else
+    {
         successinfo(tr("分配成功！"));
+        dataBase.rechargeVIP(ainfo.cardNumber.toStdString(), -cost);
+        queryRecord();
+    }
 }
 
 void mysqlManager::repairCom()
@@ -303,6 +392,52 @@ void mysqlManager::repairCom()
 void mysqlManager::dealRepair(repairInfo rinfo)
 {
     qDebug() << rinfo.comNumber << rinfo.errNumber;
+    int maxid;
+    int flag;
+    flag = dataBase.getMaxRepairID(maxid);
+    if (flag)
+        warninginfo(tr("查询失败"));
+    QDateTime begintime = QDateTime(QDate(2000, 1, 1) );
+    dataBase.newRepairment(maxid + 1, rinfo.comNumber.toStdString(), rinfo.errNumber, QDateTime::currentDateTime().secsTo(begintime), 0);
+    queryRepair();
+}
+
+void mysqlManager::modifyRepair()
+{
+    QString rID, rStatus;
+    int cur, flag;
+    cur = ui->tableRepair->currentRow();
+    rID = ui->tableRepair->item(cur, 0)->text();
+    rStatus = ui->tableRepair->item(cur, 4)->text();
+    if (rStatus == "未修复")
+    {
+        bool ok;
+        flag = dataBase.changeRepairmentStatus(rID.toInt(&ok), 1);
+        if (flag && ok)
+        {
+            ui->tableRepair->setItem(cur, 4, new QTableWidgetItem(tr("已修复")));
+            successinfo(tr("更改修理状态成功！"));
+        }
+        else
+        {
+            warninginfo(tr("更改修理状态失败！"));
+        }
+    }
+    else
+    {
+        bool ok;
+        flag = dataBase.changeRepairmentStatus(rID.toInt(&ok), 0);
+        if (flag && ok)
+        {
+            ui->tableRepair->setItem(cur, 4, new QTableWidgetItem(tr("未修复")));
+            successinfo(tr("更改修理状态成功！"));
+        }
+        else
+        {
+            warninginfo(tr("更改修理状态失败！"));
+        }
+    }
+
 }
 
 void mysqlManager::beStrong()

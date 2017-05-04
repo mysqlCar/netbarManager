@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="status">
      <attribute name="title">
@@ -488,7 +488,7 @@
       <property name="geometry">
        <rect>
         <x>150</x>
-        <y>360</y>
+        <y>400</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -501,7 +501,7 @@
       <property name="geometry">
        <rect>
         <x>460</x>
-        <y>360</y>
+        <y>400</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -558,7 +558,7 @@
       <property name="geometry">
        <rect>
         <x>120</x>
-        <y>330</y>
+        <y>360</y>
         <width>160</width>
         <height>22</height>
        </rect>
@@ -576,13 +576,44 @@
        </item>
       </layout>
      </widget>
-     <zorder>tableRepair</zorder>
-     <zorder>qRepair</zorder>
-     <zorder>mRepair</zorder>
-     <zorder>horizontalLayoutWidget_8</zorder>
-     <zorder>horizontalLayoutWidget_9</zorder>
-     <zorder>horizontalLayoutWidget_10</zorder>
-     <zorder>label_13</zorder>
+     <widget class="QWidget" name="horizontalLayoutWidget_11">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>330</y>
+        <width>160</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_11">
+       <item>
+        <widget class="QLabel" name="label_14">
+         <property name="text">
+          <string>报修原因</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="repairReason">
+         <item>
+          <property name="text">
+           <string>任意</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>硬件故障</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>软件故障</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </widget>
    <widget class="QLabel" name="time">
