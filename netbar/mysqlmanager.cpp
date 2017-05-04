@@ -115,7 +115,7 @@ void mysqlManager::queryCom()
     status = ui->qStatus->currentIndex() - 1;
     ui->qNumber->clear();
     ui->qModel->clear();
-    ui->qStatus->clear();
+    ui->qStatus->setCurrentIndex(0);
     static vector<computer> comList;
     comList.clear();
     int i = 0;
