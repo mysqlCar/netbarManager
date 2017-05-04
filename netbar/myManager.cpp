@@ -253,7 +253,7 @@ int myManager::newRepairment(int repairmentID, string computerID, int repairment
     int flag;
 
     mysqlQuery = "insert Into Repairment values \
-                    ('" + to_string(repairmentID) + "', '" + computerID + "', '" + to_string(repairmentReason) + "', " + to_string(repairmentDate) + "', " + to_string(repairmentStatus) + ")";
+                    ('" + to_string(repairmentID) + "', '" + computerID + "', '" + to_string(repairmentReason) + "', '" + to_string(repairmentDate) + "', '" + to_string(repairmentStatus) + "')";
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){
         cout << "Failed to add the repairment" << endl;
@@ -376,12 +376,12 @@ int myManager::selectComputer(string *computerID, string *computerType, int comp
         cout << "Failed to get Computer " << endl;
         cout << "Error Messege:" << endl;
         cout << mysql_error(&mysqlClient) <<endl << endl;
-        return -1;
+        return 1;
     }
 
     if ((result = mysql_store_result(&mysqlClient)) == NULL){
         cout << "Failed to save result\n";
-        return -1;
+        return 1;
     }
 
     computer X;
@@ -392,7 +392,7 @@ int myManager::selectComputer(string *computerID, string *computerType, int comp
         Res.push_back(X);
     }
 
-    return -1;
+    return 0;
 }
 
 int myManager::selectUser(string *userID, string *userName, vector<user> &Res){
@@ -414,12 +414,12 @@ int myManager::selectUser(string *userID, string *userName, vector<user> &Res){
         cout << "Failed to get User " << endl;
         cout << "Error Messege:" << endl;
         cout << mysql_error(&mysqlClient) <<endl << endl;
-        return -1;
+        return 1;
     }
 
     if ((result = mysql_store_result(&mysqlClient)) == NULL){
         cout << "Failed to save result\n";
-        return -1;
+        return 1;
     }
 
     user X;
@@ -430,7 +430,7 @@ int myManager::selectUser(string *userID, string *userName, vector<user> &Res){
         Res.push_back(X);
     }
 
-    return -1;
+    return 0;
 }
 
 int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipCard> &Res){
@@ -454,12 +454,12 @@ int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipC
         cout << "Failed to get VIP " << endl;
         cout << "Error Messege:" << endl;
         cout << mysql_error(&mysqlClient) <<endl << endl;
-        return -1;
+        return 1;
     }
 
     if ((result = mysql_store_result(&mysqlClient)) == NULL){
         cout << "Failed to save result\n";
-        return -1;
+        return 1;
     }
 
     vipCard X;
@@ -472,7 +472,7 @@ int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipC
         Res.push_back(X);
     }
 
-    return -1;
+    return 0;
 }
 
 int myManager::selectRepairment(int repairmentID, string *computerID, int repairmentReason, int repairmentDate, int repairmentStatus, vector<repairment> &Res){
@@ -496,16 +496,17 @@ int myManager::selectRepairment(int repairmentID, string *computerID, int repair
         mysqlQuery = mysqlQuery + " and repairmentStatus = '" + to_string(repairmentStatus) + "'";
 
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+
     if (flag){
         cout << "Failed to get repairment " << endl;
         cout << "Error Messege:" << endl;
         cout << mysql_error(&mysqlClient) <<endl << endl;
-        return -1;
+        return 1;
     }
 
     if ((result = mysql_store_result(&mysqlClient)) == NULL){
         cout << "Failed to save result\n";
-        return -1;
+        return 1;
     }
 
     repairment X;
@@ -518,7 +519,7 @@ int myManager::selectRepairment(int repairmentID, string *computerID, int repair
         Res.push_back(X);
     }
 
-    return -1;
+    return 0;
 }
 
 int myManager::selectUsingRecord(int recordID, string *computerID, string *vipID, string *userID, vector<usingRecord> &Res){
@@ -544,12 +545,12 @@ int myManager::selectUsingRecord(int recordID, string *computerID, string *vipID
         cout << "Failed to get usingRecord " << endl;
         cout << "Error Messege:" << endl;
         cout << mysql_error(&mysqlClient) <<endl << endl;
-        return -1;
+        return 1;
     }
 
     if ((result = mysql_store_result(&mysqlClient)) == NULL){
         cout << "Failed to save result\n";
-        return -1;
+        return 1;
     }
 
     usingRecord X;
@@ -563,7 +564,7 @@ int myManager::selectUsingRecord(int recordID, string *computerID, string *vipID
         Res.push_back(X);
     }
 
-    return -1;
+    return 0;
 }
 
 int myManager::checkVIPNumber(string vipID)
@@ -661,7 +662,7 @@ int myManager::getUserName(string userID, string &userName)
     row = mysql_fetch_row(result);
     if (row != NULL)
     {
-        userName = row[0];
+        userName = row[1];
     }
     else
         return -1;
@@ -713,8 +714,10 @@ int myManager::getMaxRecordID(int &s){
 
 int myManager::getMaxRepairID(int &s){
     vector<repairment> Res;
+    Res.clear();
     int flag = myManager::selectRepairment(-1, NULL, -1, -1, -1, Res);
     int len = Res.size();
+    cout << len << endl;
     s = -1;
     for (int i = 0; i < len; i++)
         if (s < Res[i].repairmentID)

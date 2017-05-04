@@ -295,6 +295,13 @@ void mysqlManager::addCard()
 
 void mysqlManager::dealCard(infocard cardinfo)
 {
+    cout << "START" << endl;
+    if (cardinfo.name != NULL)
+        cout << cardinfo.name.toStdString() << endl;
+    if (cardinfo.ok)
+        cout << 1 << endl;
+    cout << "ENDL" << endl;
+
     if (! cardinfo.ok || cardinfo.name == NULL)
     {
         warninginfo("创建新卡失败，请在确认前使用两个检查按钮确认输入信息是否合法");
