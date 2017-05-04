@@ -60,7 +60,7 @@ class myManager{
     int changeRepairmentStatus(int repairmentID, int repairmentStatus);
 //  int changeUsingRecord(int recordID, string computerID, string vipID, string userID);
 
-    int checkVIPNumber(string);
+    bool checkVIPNumber(string);
     int getComputerStatus(string computerID);
     int getUserName(string, string &);
     int rechargeVIP(string vipID, int rechargeAmount);

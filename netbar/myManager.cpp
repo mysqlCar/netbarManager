@@ -572,7 +572,7 @@ bool myManager::checkVIPNumber(string vipID)
     vector<vipCard> Res;
     Res.clear();
     int flag = selectVIP(&vipID, NULL, -1, Res);
-    return (Res.size() > 0) & (flag == 0);
+    return (Res.size() > 0) && (flag == 0);
 }
 
 int myManager::getComputerStatus(string computerID){
