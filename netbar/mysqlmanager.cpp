@@ -160,6 +160,13 @@ void mysqlManager::queryCom()
         {
             ui->tableStatus->setItem(i, 2, new QTableWidgetItem(QString(tr("使用中"))));
             i++;
+            break;
+        }
+        case(2):
+        {
+            ui->tableStatus->setItem(i, 2, new QTableWidgetItem(QString(tr("维修中"))));
+            i++;
+            break;
         }
         }
     }
@@ -440,15 +447,17 @@ void mysqlManager::dealRepair(repairInfo rinfo)
         warninginfo(tr("查询失败"));
     QDateTime begintime = QDateTime(QDate(2000, 1, 1) );
     dataBase.newRepairment(maxid + 1, rinfo.comNumber.toStdString(), rinfo.errNumber, QDateTime::currentDateTime().secsTo(begintime), 0);
+    dataBase.changeComputerStatus(rinfo.comNumber.toStdString(), 2);
     queryRepair();
 }
 
 void mysqlManager::modifyRepair()
 {
-    QString rID, rStatus;
+    QString rID, rStatus, cID;
     int cur, flag;
     cur = ui->tableRepair->currentRow();
     rID = ui->tableRepair->item(cur, 0)->text();
+    cID = ui->tableRepair->item(cur, 1)->text();
     rStatus = ui->tableRepair->item(cur, 4)->text();
     if (rStatus == "未修复")
     {
@@ -457,6 +466,7 @@ void mysqlManager::modifyRepair()
         if (flag && ok)
         {
             ui->tableRepair->setItem(cur, 4, new QTableWidgetItem(tr("已修复")));
+            dataBase.changeComputerStatus(cID.toStdString(), 0);
             successinfo(tr("更改修理状态成功！"));
         }
         else
@@ -471,6 +481,7 @@ void mysqlManager::modifyRepair()
         if (flag && ok)
         {
             ui->tableRepair->setItem(cur, 4, new QTableWidgetItem(tr("未修复")));
+            dataBase.changeComputerStatus(cID.toStdString(), 2);
             successinfo(tr("更改修理状态成功！"));
         }
         else
@@ -493,6 +504,7 @@ void mysqlManager::dealStrong(rechargeInfo rinfo)
 {
     qDebug() << rinfo.cardNumber << rinfo.money << endl;
     int flag = dataBase.rechargeVIP(rinfo.cardNumber.toStdString(), rinfo.money.toInt());
+    flag = flag || !dataBase.checkVIPNumber(rinfo.cardNumber.toStdString());
     if (flag)
     {
         warninginfo("充值失败，请输入正确的卡号和充值金额！");
