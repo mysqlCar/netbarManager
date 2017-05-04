@@ -12,7 +12,7 @@ class newcard;
 struct infocard
 {
     QString name,id,charge, cardNumber;
-    bool ok;
+    bool ok_name, ok_cardID;
 };
 
 class newcard : public QDialog
