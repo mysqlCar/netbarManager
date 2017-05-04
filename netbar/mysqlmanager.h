@@ -48,6 +48,7 @@ private:
     void dealUsr(infousr);
     void addCard();
     void dealCard(infocard);
+    void queryCard();
     void assignCom();
     void dealAssign(assignInfo);
     void beStrong();
@@ -63,6 +64,7 @@ private:
     void sortStatus(int);
     void sortRecord(int);
     void sortRepair(int);
+    void sortVIP(int);
     void statusUp();
     void statusDown();
     void refreshStatus();

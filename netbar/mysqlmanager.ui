@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="status">
      <attribute name="title">
@@ -296,6 +296,71 @@
       </property>
       <property name="text">
        <string>会员</string>
+      </property>
+     </widget>
+     <widget class="QTableWidget" name="tableVIP">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>30</y>
+        <width>411</width>
+        <height>341</height>
+       </rect>
+      </property>
+      <column>
+       <property name="text">
+        <string>身份证号</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>卡号</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>余额</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>会员等级</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_12">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>380</y>
+        <width>241</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_12">
+       <item>
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>用户身份证号</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="id2Card"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QPushButton" name="qCard">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>430</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>查询</string>
       </property>
      </widget>
     </widget>

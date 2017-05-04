@@ -26,12 +26,14 @@ mysqlManager::mysqlManager(QWidget *parent) :
     connect(ui->tableStatus->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortStatus);
     connect(ui->tableRecord->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortRecord);
     connect(ui->tableRepair->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortRepair);
+    connect(ui->tableVIP->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortVIP);
     connect(ui->removeCom, &QPushButton::clicked, this, &mysqlManager::removeComputer);
     connect(ui->comPushUp, &QPushButton::clicked, this, &mysqlManager::statusUp);
     connect(ui->comPushDown, &QPushButton::clicked, this, &mysqlManager::statusDown);
     connect(ui->queryRecord, &QPushButton::clicked, this, &mysqlManager::queryRecord);
     connect(ui->qRepair, &QPushButton::clicked, this, &mysqlManager::queryRepair);
     connect(ui->mRepair, &QPushButton::clicked, this, &mysqlManager::modifyRepair);
+    connect(ui->qCard, &QPushButton::clicked, this, &mysqlManager::queryCard);
     ui->tableStatus->viewport()->installEventFilter(this);
     ui->tableStatus->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableStatus->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -47,6 +49,11 @@ mysqlManager::mysqlManager(QWidget *parent) :
     ui->tableRepair->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableRepair->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableRepair->verticalHeader()->setHidden(true);
+    ui->tableVIP->viewport()->installEventFilter(this);
+    ui->tableVIP->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableVIP->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableVIP->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableVIP->verticalHeader()->setHidden(true);
     /*ui->tableStatus->setAcceptDrops(true);
     ui->tableStatus->setDragDropMode(QAbstractItemView::DragDrop);
     ui->tableStatus->setDragEnabled(true);*/
@@ -261,6 +268,33 @@ void mysqlManager::queryRepair()
         default:
             ui->tableRepair->setItem(i, 4, new QTableWidgetItem(tr("已修复")));
         }
+    }
+}
+
+void mysqlManager::queryCard()
+{
+    QString userID;
+    userID = ui->id2Card->text();
+    ui->id2Card->clear();
+    static vector<vipCard> cardList;
+    cardList.clear();
+    int i = 0;
+    string a;
+    string * pa;
+    a = userID.toStdString();
+    if (a== "") pa = NULL;
+    else pa = &a;
+    dataBase.selectVIP(NULL, pa, -1, cardList);
+    int cardNumber = cardList.size();
+    ui->tableVIP->setRowCount(0);
+    ui->tableVIP->clearContents();
+    ui->tableVIP->setRowCount(cardNumber);
+    for (vector<vipCard>::iterator iter = cardList.begin(); iter != cardList.end(); iter++)
+    {
+        ui->tableVIP->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(iter -> userID)));
+        ui->tableVIP->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(iter -> vipID)));
+        ui->tableVIP->setItem(i, 2, new QTableWidgetItem(QString::number(iter -> vipRank)));
+        ui->tableVIP->setItem(i, 3, new QTableWidgetItem(QString::number(iter -> vipBalance)));
     }
 }
 
@@ -485,6 +519,13 @@ void mysqlManager::sortRepair(int column)
 {
     static bool f = true;
     ui->tableRepair->sortByColumn(column, f ? Qt::AscendingOrder : Qt::DescendingOrder);
+    f = !f;
+}
+
+void mysqlManager::sortVIP(int column)
+{
+    static bool f = true;
+    ui->tableVIP->sortByColumn(column, f ? Qt::AscendingOrder : Qt::DescendingOrder);
     f = !f;
 }
 
