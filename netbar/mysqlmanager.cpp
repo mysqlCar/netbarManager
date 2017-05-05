@@ -22,7 +22,7 @@ mysqlManager::mysqlManager(QWidget *parent) :
     connect(ui->buttonRecharge, &QPushButton::clicked, this, &mysqlManager::beStrong);
     connect(ui->buttonQuery, &QPushButton::clicked, this, &mysqlManager::queryCom);
     connect(ui->buttonReset, &QPushButton::clicked, this, &mysqlManager::resetdata);
-    connect(ui->usingRecord, &QPushButton::clicked, this, &mysqlManager::getRecord);
+    //connect(ui->usingRecord, &QPushButton::clicked, this, &mysqlManager::getRecord);
     connect(ui->tableStatus->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortStatus);
     connect(ui->tableRecord->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortRecord);
     connect(ui->tableRepair->horizontalHeader(), &QHeaderView::sectionClicked, this, &mysqlManager::sortRepair);
@@ -34,6 +34,7 @@ mysqlManager::mysqlManager(QWidget *parent) :
     connect(ui->qRepair, &QPushButton::clicked, this, &mysqlManager::queryRepair);
     connect(ui->mRepair, &QPushButton::clicked, this, &mysqlManager::modifyRepair);
     connect(ui->qCard, &QPushButton::clicked, this, &mysqlManager::queryCard);
+    connect(ui->buttonShut, &QPushButton::clicked, this, &mysqlManager::shutCom);
     ui->tableStatus->viewport()->installEventFilter(this);
     ui->tableStatus->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableStatus->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -74,6 +75,40 @@ void mysqlManager::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event);
     ui->time->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss ddd"));
+    static int counter = 0;
+    counter++;
+    if (counter %10 == 0)
+    {
+        counter = 0;
+        checkcomputer();
+    }
+}
+
+void mysqlManager::shutCom()
+{
+    int cur = ui->tableStatus->currentRow();
+    QString ID = ui->tableStatus->item(cur,0)->text();
+    dataBase.changeComputerStatus(ID.toStdString(), 0);
+    ui->tableStatus->setItem(cur, 2, new QTableWidgetItem(tr("关机")));
+}
+
+void mysqlManager::checkcomputer()
+{
+    int sec;
+    QDateTime begin;
+    static vector<usingRecord> shut;
+    begin = QDateTime(QDate(2000, 1, 1));
+    sec = begin.secsTo(QDateTime::currentDateTime());
+    qDebug() << sec;
+    int flag = dataBase.selectPoweroff(sec, shut);
+    if (!flag)
+    {
+        for (vector<usingRecord>::iterator iter = shut.begin(); iter!= shut.end(); iter++)
+        {
+            dataBase.changeComputerStatus(iter -> computerID, 0);
+            cout << iter -> computerID;
+        }
+    }
 }
 
 void mysqlManager::addCom()
@@ -213,11 +248,12 @@ void mysqlManager::queryRecord()
         ui->tableRecord->setItem(i, 3, new QTableWidgetItem(QString::fromStdString(iter -> computerID)));
         QDateTime temp;
         temp = QDateTime(QDate(2000, 1, 1));
-        temp.addSecs(iter->startTime);
+        temp = temp.addSecs(iter->startTime);
         ui->tableRecord->setItem(i, 4, new QTableWidgetItem(temp.toString("yyyy-MM-dd hh:mm:ss")));
         temp = QDateTime(QDate(2000, 1, 1));
-        temp.addSecs(iter->endTime);
+        temp = temp.addSecs(iter->endTime);
         ui->tableRecord->setItem(i, 5, new QTableWidgetItem(temp.toString("yyyy-MM-dd hh:mm:ss")));
+        ++i;
     }
 }
 
@@ -259,8 +295,8 @@ void mysqlManager::queryRepair()
         ui->tableRepair->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(iter -> computerID)));
         QDateTime temp;
         temp = QDateTime(QDate(2000, 1, 1));
-        temp.addSecs(iter->repairmentDate);
-        ui->tableRecord->setItem(i, 2, new QTableWidgetItem(temp.toString("yyyy-MM-dd hh:mm:ss")));
+        temp = temp.addSecs(iter->repairmentDate);
+        ui->tableRepair->setItem(i, 2, new QTableWidgetItem(temp.toString("yyyy-MM-dd hh:mm:ss")));
         switch (iter -> repairmentReason){
         case 0:
             ui->tableRepair->setItem(i, 3, new QTableWidgetItem(tr("硬件故障")));
@@ -268,13 +304,14 @@ void mysqlManager::queryRepair()
         default:
             ui->tableRepair->setItem(i, 3, new QTableWidgetItem(tr("软件故障")));
         }
-        switch (iter -> repairmentReason){
+        switch (iter -> repairmentStatus){
         case 0:
             ui->tableRepair->setItem(i, 4, new QTableWidgetItem(tr("未修复")));
             break;
         default:
             ui->tableRepair->setItem(i, 4, new QTableWidgetItem(tr("已修复")));
         }
+        i++;
     }
 }
 
@@ -300,8 +337,9 @@ void mysqlManager::queryCard()
     {
         ui->tableVIP->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(iter -> userID)));
         ui->tableVIP->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(iter -> vipID)));
-        ui->tableVIP->setItem(i, 2, new QTableWidgetItem(QString::number(iter -> vipRank)));
-        ui->tableVIP->setItem(i, 3, new QTableWidgetItem(QString::number(iter -> vipBalance)));
+        ui->tableVIP->setItem(i, 2, new QTableWidgetItem(QString::number(iter -> vipBalance)));
+        ui->tableVIP->setItem(i, 3, new QTableWidgetItem(QString::number(iter -> vipRank)));
+        ++i;
     }
 }
 
@@ -372,7 +410,7 @@ void mysqlManager::dealAssign(assignInfo ainfo)
 {
     qDebug() << ainfo.cardNumber << ainfo.comNumber << ainfo.useCash << "\n";
     int flag;
-    int startsec, endsec;
+    qint64 startsec, endsec;
     flag = dataBase.getComputerStatus(ainfo.comNumber.toStdString());
     if (flag)
     {
@@ -381,12 +419,10 @@ void mysqlManager::dealAssign(assignInfo ainfo)
     }
     static QDateTime begintime;
     begintime = QDateTime(QDate(2000, 1, 1) );
-    startsec = QDateTime::currentDateTime().secsTo(begintime);
-    endsec = ainfo.endTime.secsTo(begintime);
+    startsec = -QDateTime::currentDateTime().secsTo(begintime);
+    endsec = -ainfo.endTime.secsTo(begintime);
     if (ainfo.useCash)
         ainfo.cardNumber = "card" + ainfo.idNumber;
-    dataBase.changeComputerStatus(ainfo.comNumber.toStdString(), 1);
-
     int maxid;
     flag = dataBase.getMaxRecordID(maxid);
     if (flag)
@@ -404,6 +440,7 @@ void mysqlManager::dealAssign(assignInfo ainfo)
         string t;
         t = ainfo.cardNumber.toStdString();
         flag = dataBase.selectVIP(&t, NULL, -1, k);
+        qDebug() << cost << QString::fromStdString(k[0].vipID) << (k[0].vipBalance);
         if (flag)
         {
             warninginfo(tr("指定会员卡无效"));
@@ -417,14 +454,17 @@ void mysqlManager::dealAssign(assignInfo ainfo)
     }
 
     flag = dataBase.Allocation(maxid + 1, ainfo.comNumber.toStdString(),
-                               ainfo.idNumber.toStdString(), ainfo.cardNumber.toStdString(),
+                               ainfo.cardNumber.toStdString(), ainfo.idNumber.toStdString(),
                                startsec, endsec);
+    qDebug() << maxid+1 << ainfo.comNumber << ainfo.idNumber << ainfo.cardNumber << startsec
+             << endsec;
     if (flag)
         warninginfo(tr("分配失败，请确认输入合理！"));
     else
     {
         successinfo(tr("分配成功！"));
         dataBase.rechargeVIP(ainfo.cardNumber.toStdString(), -cost);
+        dataBase.changeComputerStatus(ainfo.comNumber.toStdString(), 1);
         queryRecord();
     }
 }
@@ -446,7 +486,7 @@ void mysqlManager::dealRepair(repairInfo rinfo)
     if (flag)
         warninginfo(tr("查询失败"));
     QDateTime begintime = QDateTime(QDate(2000, 1, 1) );
-    dataBase.newRepairment(maxid + 1, rinfo.comNumber.toStdString(), rinfo.errNumber, QDateTime::currentDateTime().secsTo(begintime), 0);
+    dataBase.newRepairment(maxid + 1, rinfo.comNumber.toStdString(), rinfo.errNumber, -QDateTime::currentDateTime().secsTo(begintime), 0);
     dataBase.changeComputerStatus(rinfo.comNumber.toStdString(), 2);
     queryRepair();
 }
@@ -459,14 +499,15 @@ void mysqlManager::modifyRepair()
     rID = ui->tableRepair->item(cur, 0)->text();
     cID = ui->tableRepair->item(cur, 1)->text();
     rStatus = ui->tableRepair->item(cur, 4)->text();
-    if (rStatus == "未修复")
+    if (rStatus == tr("未修复"))
     {
         bool ok;
         flag = dataBase.changeRepairmentStatus(rID.toInt(&ok), 1);
-        if (flag && ok)
+        if (!flag && ok)
         {
             ui->tableRepair->setItem(cur, 4, new QTableWidgetItem(tr("已修复")));
             dataBase.changeComputerStatus(cID.toStdString(), 0);
+            dataBase.changeRepairmentStatus(rID.toInt(), 1);
             successinfo(tr("更改修理状态成功！"));
         }
         else
@@ -478,10 +519,11 @@ void mysqlManager::modifyRepair()
     {
         bool ok;
         flag = dataBase.changeRepairmentStatus(rID.toInt(&ok), 0);
-        if (flag && ok)
+        if (!flag && ok)
         {
             ui->tableRepair->setItem(cur, 4, new QTableWidgetItem(tr("未修复")));
             dataBase.changeComputerStatus(cID.toStdString(), 2);
+            dataBase.changeRepairmentStatus(rID.toInt(), 0);
             successinfo(tr("更改修理状态成功！"));
         }
         else
@@ -504,7 +546,9 @@ void mysqlManager::dealStrong(rechargeInfo rinfo)
 {
     qDebug() << rinfo.cardNumber << rinfo.money << endl;
     int flag = dataBase.rechargeVIP(rinfo.cardNumber.toStdString(), rinfo.money.toInt());
+    qDebug() << flag;
     flag = flag || !dataBase.checkVIPNumber(rinfo.cardNumber.toStdString());
+    qDebug() << flag;
     if (flag)
     {
         warninginfo("充值失败，请输入正确的卡号和充值金额！");

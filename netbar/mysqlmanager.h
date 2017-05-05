@@ -61,6 +61,8 @@ private:
     void modifyRepair();
 
     void removeComputer();
+    void checkcomputer();
+    void shutCom();
     void sortStatus(int);
     void sortRecord(int);
     void sortRepair(int);

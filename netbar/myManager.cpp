@@ -1,4 +1,6 @@
 #include "myManager.hpp"
+#include <QDebug>
+#include <QString>
 
 void myManager::setHosts(string hosts){
     this -> hosts = hosts;
@@ -467,8 +469,8 @@ int myManager::selectVIP(string *vipID, string *userID, int vipRank, vector<vipC
     while ((row = mysql_fetch_row(result)) != NULL){
         X.vipID = row[0];
         X.userID = row[1];
-        X.vipBalance = atoi(row[2]);
-        X.vipRank = atoi(row[3]);
+        X.vipRank = atoi(row[2]);
+        X.vipBalance = atoi(row[3]);
         Res.push_back(X);
     }
 
@@ -567,10 +569,54 @@ int myManager::selectUsingRecord(int recordID, string *computerID, string *vipID
     return 0;
 }
 
+int myManager::selectPoweroff(int time, vector<usingRecord> &Res){
+    string mysqlQuery;
+    MYSQL_RES * result;
+    MYSQL_ROW row;
+    int flag;
+
+    mysqlQuery = "select * \
+                    from UsingRecord \
+                    where 1";
+    if (time > 0)
+    {
+
+       mysqlQuery = mysqlQuery + " and endTime < " + to_string(time) + " and endTime >" + to_string(time - 20);
+    }
+
+    flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
+    if (flag){
+        cout << "Failed to get usingRecord " << endl;
+        cout << "Error Messege:" << endl;
+        cout << mysql_error(&mysqlClient) <<endl << endl;
+        return 1;
+    }
+
+    if ((result = mysql_store_result(&mysqlClient)) == NULL){
+        cout << "Failed to save result\n";
+        return 1;
+    }
+
+    usingRecord X;
+    while ((row = mysql_fetch_row(result)) != NULL){
+        X.recordID = atoi(row[0]);
+        X.computerID = row[1];
+        X.vipID = row[2];
+        X.userID = row[3];
+        X.startTime = atoi(row[4]);
+        X.endTime = atoi(row[5]);
+        Res.push_back(X);
+    }
+
+    return 0;
+}
+
 int myManager::checkVIPNumber(string vipID)
 {
     vector<vipCard> Res;
-    return selectVIP(&vipID, NULL, -1, Res);
+    Res.clear();
+    int flag = selectVIP(&vipID, NULL, -1, Res);
+    return (Res.size()>0) & (flag == 0);
 }
 
 int myManager::getComputerStatus(string computerID){
@@ -625,7 +671,7 @@ int myManager::Allocation(int recordID, string computerID, string vipID, string 
                     + to_string(recordID) + "', '" + computerID + "', '" + vipID + "', '"
                     + userID + "', " + to_string(startTime) + ", " + to_string(endTime) + ")";
 
-    cout << mysqlQuery << endl;
+    qDebug() << QString::fromStdString(mysqlQuery);
 
     flag = mysql_real_query(&mysqlClient, mysqlQuery.c_str(), mysqlQuery.length());
     if (flag){

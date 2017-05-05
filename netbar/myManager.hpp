@@ -53,6 +53,7 @@ class myManager{
     int selectVIP(string *vipID, string *userID, int vipRank, vector<vipCard> &Res);
     int selectRepairment(int repairmentID, string *computerID, int repairmentReason, int repairmentDate, int repairmentStatus, vector<repairment> &Res);
     int selectUsingRecord(int recordID, string *computerID, string *vipID, string *userID, vector<usingRecord> &Res);
+    int selectPoweroff(int time, vector<usingRecord> &Res);
 
     int changeComputerStatus(string computerID, int computerStatus);
 //  int changeUserName(string userID, string userName);

@@ -22,7 +22,7 @@ public:
     ~recharge();
     void send()
     {
-        emit(cur_charge);
+        emit charge(cur_charge);
     }
 
 signals:

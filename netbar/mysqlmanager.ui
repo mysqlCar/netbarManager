@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="status">
      <attribute name="title">
@@ -59,7 +59,7 @@
       <property name="geometry">
        <rect>
         <x>450</x>
-        <y>320</y>
+        <y>340</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -72,7 +72,7 @@
       <property name="geometry">
        <rect>
         <x>450</x>
-        <y>360</y>
+        <y>380</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -81,24 +81,11 @@
        <string>报修</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="usingRecord">
-      <property name="geometry">
-       <rect>
-        <x>450</x>
-        <y>400</y>
-        <width>75</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>上机记录</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="removeCom">
       <property name="geometry">
        <rect>
         <x>450</x>
-        <y>440</y>
+        <y>420</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -232,13 +219,26 @@
       <property name="geometry">
        <rect>
         <x>450</x>
-        <y>280</y>
+        <y>300</y>
         <width>75</width>
         <height>23</height>
        </rect>
       </property>
       <property name="text">
        <string>重置</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="buttonShut">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>260</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>关机</string>
       </property>
      </widget>
     </widget>
@@ -257,45 +257,6 @@
       </property>
       <property name="text">
        <string>充值</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>480</x>
-        <y>300</y>
-        <width>81</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>使用记录查询</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_5">
-      <property name="geometry">
-       <rect>
-        <x>480</x>
-        <y>330</y>
-        <width>75</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>用户</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_6">
-      <property name="geometry">
-       <rect>
-        <x>580</x>
-        <y>330</y>
-        <width>75</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>会员</string>
       </property>
      </widget>
      <widget class="QTableWidget" name="tableVIP">
